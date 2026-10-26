@@ -1,0 +1,498 @@
+---
+/**
+ * <ContactForm> — posts to /contact.php (see public/contact.php).
+ * Progressive enhancement: native required/type validation without JS; with
+ * JS, inline errors + an error summary, a timing field for bot filtering, and
+ * the draft is kept in sessionStorage so a server-side rejection loses nothing.
+ */
+import Field from '@/components/forms/Field.astro';
+import Button from '@/components/Button.astro';
+import { CONTACT } from '@/consts';
+import { SERVICES, DISCIPLINES } from '@/data/services';
+
+const interests = [
+  ...SERVICES.map((s) => ({ value: s.name, label: s.name })),
+  { value: 'Website or online store', label: 'Website or online store' },
+  { value: 'Not sure yet', label: 'Not sure yet' },
+];
+const expertise = DISCIPLINES.map((d) => ({ value: d, label: d }));
+---
+
+<form class="cform" action="/contact.php" method="post" novalidate data-cform id="form">
+  <div class="cform__summary" role="alert" tabindex="-1" data-summary hidden>
+    <p data-summary-text></p>
+    <ul data-summary-list></ul>
+  </div>
+
+  <fieldset class="cform__pref cform__type">
+    <legend>What brings you to Lumko?</legend>
+    <div class="cform__pref-opts">
+      <label>
+        <input type="radio" name="enquiry_type" value="project" checked data-type />
+        <span>A project or problem</span>
+      </label>
+      <label>
+        <input type="radio" name="enquiry_type" value="network" data-type />
+        <span>Joining the Lumko network</span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="cform__grid">
+    <Field name="name" label="Your name" required autocomplete="name" />
+    <Field name="organisation" label="Organisation" required autocomplete="organization" />
+    <Field name="email" label="Email" type="email" required autocomplete="email" />
+    <Field name="phone" label="Phone (optional)" type="tel" autocomplete="tel" />
+    <Field name="role" label="Your role (optional)" autocomplete="organization-title" />
+    <div data-for="project">
+      <Field
+        name="interest"
+        label="What is it mainly about?"
+        as="select"
+        options={interests}
+        placeholder="Choose one"
+      />
+    </div>
+    <div data-for="network">
+      <Field
+        name="expertise"
+        label="Main area of expertise (network applications)"
+        as="select"
+        options={expertise}
+        placeholder="Choose one"
+      />
+    </div>
+    <div data-for="network">
+      <Field
+        name="profile_url"
+        label="LinkedIn or portfolio link (optional)"
+        type="url"
+        autocomplete="url"
+        placeholder="https://"
+      />
+    </div>
+  </div>
+
+  <Field
+    name="message"
+    label="What are you trying to solve, improve or build?"
+    as="textarea"
+    required
+    rows={6}
+    hint="A few sentences is plenty. Tell us about the situation and what’s not working."
+  />
+
+  <fieldset class="cform__pref">
+    <legend>How should we get back to you?</legend>
+    <div class="cform__pref-opts">
+      {['Email', 'Phone', 'WhatsApp'].map((o, i) => (
+        <label>
+          <input type="radio" name="contact_pref" value={o} checked={i === 0} />
+          <span>{o}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="cform__consent field" data-consent>
+    <label>
+      <input type="checkbox" name="consent" value="yes" id="consent" required />
+      <span>
+        I agree that Lumko may use these details to respond to my enquiry, as
+        described in the <a href="/privacy">privacy notice</a>.
+      </span>
+    </label>
+  </div>
+
+  <!-- Bot traps: hidden from people and assistive technology -->
+  <div class="cform__trap" aria-hidden="true">
+    <label for="website">Leave this field empty</label>
+    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+  <input type="hidden" name="ts" value="" data-ts />
+
+  <div class="cform__actions">
+    <Button type="submit" size="lg" iconEnd="ph:arrow-right-light" data-analytics="contact_submit">
+      Send message
+    </Button>
+    <p class="cform__note">
+      Your message goes directly to the Lumko team at {CONTACT.email}.
+    </p>
+  </div>
+</form>
+
+<style>
+  .cform {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .cform__grid {
+    display: grid;
+    gap: 1.5rem 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .cform__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    /* network mode has seven fields: the profile link takes the full row */
+    .cform__grid > [data-for='network']:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .cform__summary {
+    padding: 1rem 1.15rem;
+    border-left: 3px solid var(--danger);
+    background: var(--danger-050);
+    color: var(--ink-strong);
+    font-size: var(--text-sm);
+  }
+  .cform__summary:focus {
+    outline: 2px solid var(--danger);
+    outline-offset: 2px;
+  }
+  .cform__summary p {
+    font-weight: 600;
+  }
+  .cform__summary ul {
+    margin: 0.4rem 0 0 1.1rem;
+  }
+  .cform__summary ul:empty {
+    display: none;
+  }
+  .cform__summary a {
+    color: var(--danger);
+  }
+
+  .cform__pref {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .cform__pref legend {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-strong);
+    margin-bottom: 0.5rem;
+  }
+  .cform__pref-opts {
+    display: inline-flex;
+    flex-wrap: wrap;
+    border: 1.5px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+  }
+  .cform__pref-opts label {
+    position: relative;
+    cursor: pointer;
+  }
+  .cform__pref-opts label + label {
+    border-left: 1.5px solid var(--line-strong);
+  }
+  .cform__pref-opts input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .cform__pref-opts span {
+    display: block;
+    padding: 0.6rem 1.1rem;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink-muted);
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .cform__pref-opts input:checked + span {
+    background: var(--brand-700);
+    color: #fff;
+  }
+  .cform__pref-opts input:focus-visible + span {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* enquiry type: two equal halves, labels may wrap on small screens */
+  .cform__type .cform__pref-opts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  .cform__type .cform__pref-opts span {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.75rem 0.9rem;
+    line-height: 1.3;
+  }
+  @media (min-width: 640px) {
+    .cform__type .cform__pref-opts {
+      display: inline-grid;
+      width: auto;
+    }
+  }
+
+  .cform__consent label {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .cform__consent input {
+    flex-shrink: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.15rem;
+    accent-color: var(--brand-700);
+  }
+  .cform__consent.field--invalid label {
+    color: var(--danger);
+  }
+
+  .cform__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .cform__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    padding-top: 0.5rem;
+  }
+  .cform__note {
+    font-size: var(--text-xs);
+    color: var(--ink-subtle);
+    max-width: 32ch;
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-cform]');
+  if (form) {
+    const summary = form.querySelector<HTMLElement>('[data-summary]')!;
+    const summaryText = form.querySelector<HTMLElement>('[data-summary-text]')!;
+    const summaryList = form.querySelector<HTMLElement>('[data-summary-list]')!;
+    const ts = form.querySelector<HTMLInputElement>('[data-ts]');
+    if (ts) ts.value = String(Math.floor(Date.now() / 1000));
+    const DRAFT = 'lumko-contact-draft';
+    const keep = ['name', 'organisation', 'email', 'phone', 'role', 'interest', 'expertise', 'profile_url', 'message'];
+
+    const messages: Record<string, string> = {
+      name: 'Enter your name.',
+      organisation: 'Enter your organisation’s name.',
+      email: 'Enter a valid email address, like name@organisation.co.za.',
+      message: 'Tell us briefly what you’re trying to solve.',
+      consent: 'Confirm that we may use your details to respond.',
+      profile_url: 'Enter a full link, starting with https://',
+    };
+
+    const fieldWrap = (el: Element) => el.closest('.field') as HTMLElement | null;
+
+    const setError = (input: HTMLInputElement | HTMLTextAreaElement, msg: string | null) => {
+      const wrap = fieldWrap(input);
+      if (!wrap) return;
+      const id = `${input.id}-error`;
+      let err = wrap.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+      const described = (input.getAttribute('aria-describedby') || '')
+        .split(' ')
+        .filter((x) => x && x !== id);
+      if (msg) {
+        if (!err) {
+          err = document.createElement('p');
+          err.className = 'field__error';
+          err.id = id;
+          wrap.appendChild(err);
+        }
+        err.textContent = msg;
+        input.setAttribute('aria-invalid', 'true');
+        input.setAttribute('aria-describedby', [...described, id].join(' '));
+        wrap.classList.add('field--invalid');
+      } else {
+        err?.remove();
+        input.removeAttribute('aria-invalid');
+        if (described.length) input.setAttribute('aria-describedby', described.join(' '));
+        else input.removeAttribute('aria-describedby');
+        wrap.classList.remove('field--invalid');
+      }
+    };
+
+    const check = (input: HTMLInputElement | HTMLTextAreaElement): string | null => {
+      const v = input.type === 'checkbox' ? (input as HTMLInputElement).checked : input.value.trim();
+      if (input.required && !v) return messages[input.name] ?? 'This field is required.';
+      if (input.name === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v)))
+        return messages.email;
+      if (input.name === 'profile_url' && v && !/^https?:\/\/[^\s.]+\.\S+$/.test(String(v)))
+        return messages.profile_url;
+      if (input.name === 'message' && typeof v === 'string' && v.length > 0 && v.length < 10)
+        return 'Add a little more detail so we can prepare.';
+      return null;
+    };
+
+    const showSummary = (text: string, items: { id: string; msg: string }[] = []) => {
+      summaryText.textContent = text;
+      summaryList.innerHTML = '';
+      items.forEach(({ id, msg }) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${id}`;
+        a.textContent = msg;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.getElementById(id)?.focus();
+        });
+        li.appendChild(a);
+        summaryList.appendChild(li);
+      });
+      summary.hidden = false;
+      summary.focus();
+    };
+
+    const inputs = [
+      ...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+        'input[required], textarea[required], input[type=email], input[type=url]',
+      ),
+    ];
+    // Only validate fields that belong to the current enquiry type.
+    const active = () => inputs.filter((i) => !i.closest<HTMLElement>('[data-for]')?.hidden);
+
+    // ---- Enquiry type: a project, or an application to join the network ----
+    const labelFor = (id: string) => form.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
+    const setLabel = (id: string, text: string, required: boolean) => {
+      const l = labelFor(id);
+      if (!l) return;
+      l.textContent = text;
+      if (required) {
+        l.insertAdjacentHTML(
+          'beforeend',
+          '<span class="field__req" aria-hidden="true">*</span><span class="visually-hidden">(required)</span>',
+        );
+      }
+    };
+    const org = form.querySelector<HTMLInputElement>('#organisation');
+    const msg = form.querySelector<HTMLTextAreaElement>('#message');
+    const msgHint = form.querySelector<HTMLElement>('#message-hint');
+    const setMode = (mode: 'project' | 'network') => {
+      const network = mode === 'network';
+      form.dataset.mode = mode;
+      form.querySelectorAll<HTMLElement>('[data-for]').forEach((w) => {
+        const on = w.dataset.for === mode;
+        w.hidden = !on;
+        w.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select').forEach((el) => (el.disabled = !on));
+      });
+      if (org) {
+        org.required = !network;
+        setLabel('organisation', network ? 'Company (optional)' : 'Organisation', !network);
+        if (network) setError(org, null);
+      }
+      setLabel('expertise', 'Main area of expertise', false);
+      setLabel(
+        'message',
+        network ? 'Tell us about your experience and the work you do' : 'What are you trying to solve, improve or build?',
+        true,
+      );
+      if (msgHint) {
+        msgHint.textContent = network
+          ? 'Your field, the kind of work you take on, and where you are based.'
+          : 'A few sentences is plenty. Tell us about the situation and what’s not working.';
+      }
+      messages.message = network ? 'Tell us briefly about your experience.' : 'Tell us briefly what you’re trying to solve.';
+      if (msg?.getAttribute('aria-invalid') === 'true') setError(msg, check(msg));
+    };
+    form.querySelectorAll<HTMLInputElement>('[data-type]').forEach((r) =>
+      r.addEventListener('change', () => setMode(r.value === 'network' ? 'network' : 'project')),
+    );
+
+    inputs.forEach((input) =>
+      input.addEventListener('blur', () => {
+        if (input.getAttribute('aria-invalid') === 'true' || input.value) setError(input, check(input));
+      }),
+    );
+    inputs.forEach((input) =>
+      input.addEventListener('input', () => {
+        if (input.getAttribute('aria-invalid') === 'true') setError(input, check(input));
+      }),
+    );
+
+    form.addEventListener('submit', (e) => {
+      const problems: { id: string; msg: string }[] = [];
+      active().forEach((input) => {
+        const m = check(input);
+        setError(input, m);
+        if (m) problems.push({ id: input.id, msg: m });
+      });
+      if (problems.length) {
+        e.preventDefault();
+        showSummary(
+          problems.length === 1 ? 'Please fix one thing before sending:' : `Please fix ${problems.length} things before sending:`,
+          problems,
+        );
+        return;
+      }
+      try {
+        const data: Record<string, string> = {};
+        keep.forEach((k) => {
+          const el = form.elements.namedItem(k) as HTMLInputElement | null;
+          if (el) data[k] = el.value;
+        });
+        sessionStorage.setItem(DRAFT, JSON.stringify(data));
+      } catch {
+        /* storage unavailable — nothing to keep */
+      }
+    });
+
+    // Returned from the server with an error: restore the draft and explain.
+    const params = new URLSearchParams(location.search);
+    const startNetwork = params.get('type') === 'network';
+    const typeRadio = form.querySelector<HTMLInputElement>(`[data-type][value="${startNetwork ? 'network' : 'project'}"]`);
+    if (typeRadio) typeRadio.checked = true;
+    setMode(startNetwork ? 'network' : 'project');
+    const error = params.get('error');
+    if (error) {
+      try {
+        const raw = sessionStorage.getItem(DRAFT);
+        if (raw) {
+          const data = JSON.parse(raw) as Record<string, string>;
+          Object.entries(data).forEach(([k, v]) => {
+            const el = form.elements.namedItem(k) as HTMLInputElement | null;
+            if (el && !el.value) el.value = v;
+          });
+        }
+      } catch {
+        /* ignore */
+      }
+      if (error === 'send') {
+        showSummary('We couldn’t send your message just now. Please try again, or email us directly.');
+        const li = document.createElement('li');
+        li.innerHTML = '<a href="mailto:info@lumko.cloud">info@lumko.cloud</a>';
+        summaryList.appendChild(li);
+      } else if (error === 'limit') {
+        showSummary('We’ve received several messages from this connection. Please wait a little, or email us directly.');
+      } else {
+        const fields = (params.get('fields') || '').split(',').filter(Boolean);
+        showSummary(
+          'Some details need another look:',
+          fields.map((f) => ({ id: f, msg: messages[f] ?? 'Check this field.' })),
+        );
+        fields.forEach((f) => {
+          const el = document.getElementById(f) as HTMLInputElement | null;
+          if (el) setError(el, messages[f] ?? 'Check this field.');
+        });
+      }
+    } else {
+      try {
+        sessionStorage.removeItem(DRAFT);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+</script>

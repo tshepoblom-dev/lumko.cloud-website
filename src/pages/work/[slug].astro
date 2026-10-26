@@ -1,0 +1,330 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import SystemMap from '@/components/SystemMap.astro';
+import MediaFrame from '@/components/MediaFrame.astro';
+import CaseStudyCard from '@/components/CaseStudyCard.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import { SITE, SECONDARY_CTA } from '@/consts';
+
+export async function getStaticPaths() {
+  const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+  return work.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: work[(i + 1) % work.length] },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+  next: CollectionEntry<'work'>;
+}
+const { entry, next } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const statusText =
+  d.status === 'delivered' ? 'Delivered' : d.status === 'in-progress' ? 'In progress' : 'Lumko product';
+
+const schema = [
+  {
+    '@type': 'CreativeWork',
+    name: d.title,
+    headline: d.headline,
+    description: d.seoDescription,
+    about: d.capabilities,
+    dateCreated: d.year,
+    creator: { '@id': `${SITE.origin}/#organization` },
+    ...(d.clientNamed && d.status !== 'product'
+      ? { sourceOrganization: { '@type': 'Organization', name: d.client } }
+      : {}),
+    locationCreated: { '@type': 'Place', name: d.location },
+  },
+];
+---
+
+<BaseLayout
+  title={`${d.title}: ${d.sector} case study`}
+  description={d.seoDescription}
+  ogType="article"
+  schema={schema}
+>
+  <article>
+    <header class="cs-hero">
+      <div class="container container--wide">
+        <Breadcrumbs items={[{ label: 'Our work', href: '/work' }, { label: d.title }]} />
+        <p class="cs-hero__meta">
+          <span>{d.sector}</span><span>{d.location}</span><span>{d.year}</span>
+        </p>
+        <h1 class="cs-hero__title">{d.headline}</h1>
+        <p class="lead cs-hero__summary">{d.summary}</p>
+        <dl class="cs-hero__facts">
+          <div><dt>{d.status === 'product' ? 'Product' : 'Client'}</dt><dd>{d.client}</dd></div>
+          <div><dt>Status</dt><dd>{statusText}{d.statusNote && <span>{d.statusNote}</span>}</dd></div>
+          {d.facts.map((f) => (
+            <div><dt>{f.label}</dt><dd>{f.value}</dd></div>
+          ))}
+        </dl>
+      </div>
+    </header>
+
+    <section class="cs-story" aria-label="Challenge, approach and result">
+      <div class="container container--wide cs-story__grid">
+        <div class="cs-story__block" data-reveal>
+          <h2>The challenge</h2>
+          <p>{d.challenge}</p>
+        </div>
+        <div class="cs-story__block" data-reveal style="--reveal-i:1">
+          <h2>What we did</h2>
+          <p>{d.approach}</p>
+        </div>
+        <div class="cs-story__block cs-story__block--result" data-reveal style="--reveal-i:2">
+          <h2>The result</h2>
+          <p>{d.result}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-system" aria-labelledby="system-h">
+      <div class="container container--wide">
+        <h2 id="system-h" class="cs-system__title" data-reveal>How the system fits together</h2>
+        <div data-reveal style="--reveal-i:1">
+          <SystemMap {...d.system} />
+        </div>
+        {d.image && (
+          <div class="cs-shot" data-reveal>
+            <MediaFrame
+              src={d.image}
+              alt={d.imageAlt ?? ''}
+              caption={d.imageCaption}
+              widths={[720, 1080, 1440]}
+              sizes="(min-width: 1360px) 1280px, 100vw"
+            />
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="cs-body">
+      <div class="container container--wide cs-body__grid">
+        <div class="prose" data-reveal>
+          <Content />
+        </div>
+        <aside class="cs-aside" aria-label="Project details" data-reveal style="--reveal-i:1">
+          <div>
+            <h2>Capabilities</h2>
+            <ul role="list">{d.capabilities.map((c) => <li>{c}</li>)}</ul>
+          </div>
+          <div>
+            <h2>Technology</h2>
+            <ul role="list">{d.stack.map((s) => <li>{s}</li>)}</ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </article>
+
+  <section class="cs-next" aria-labelledby="next-h">
+    <div class="container container--wide">
+      <div class="cs-next__head">
+        <p id="next-h" class="index-label">Next case study</p>
+        <a href="/work" class="link-arrow"><span>{SECONDARY_CTA.label}</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
+      </div>
+      <CaseStudyCard entry={next} headingLevel="h2" />
+    </div>
+  </section>
+
+  <CtaBlock heading="Facing a similar problem?" body="Tell us what you’re working with. We’ll help you work out what the technology needs to do, and who needs to be involved." />
+</BaseLayout>
+
+<style>
+  .cs-hero {
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3rem) clamp(3rem, 2rem + 4vw, 5rem);
+    border-bottom: 1px solid var(--line);
+  }
+  .cs-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .cs-hero__meta span + span::before {
+    content: '/';
+    margin: 0 0.6rem;
+    opacity: 0.5;
+  }
+  .cs-hero__title {
+    margin-top: 1.25rem;
+    max-width: 20ch;
+    font-size: var(--text-h1);
+    font-weight: 620;
+    line-height: 1.05;
+    letter-spacing: var(--tracking-display);
+  }
+  .cs-hero__summary {
+    margin-top: 1.5rem;
+    max-width: 60ch;
+  }
+  .cs-hero__facts {
+    display: grid;
+    gap: 1.25rem 3rem;
+    margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-strong);
+  }
+  .cs-hero__facts dt {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .cs-hero__facts dd {
+    margin-top: 0.3rem;
+    font-weight: 600;
+    color: var(--ink-strong);
+  }
+  .cs-hero__facts dd span {
+    display: block;
+    margin-top: 0.2rem;
+    font-weight: 400;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    max-width: 36ch;
+  }
+  @media (min-width: 760px) {
+    .cs-hero__facts {
+      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    }
+  }
+
+  .cs-story {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+  }
+  .cs-story__grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .cs-story__block h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: var(--text-h3);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .cs-story__block h2 span {
+    font-family: var(--font-sans);
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    color: var(--label);
+  }
+  .cs-story__block p {
+    color: var(--ink-muted);
+    line-height: 1.7;
+  }
+  .cs-story__block--result h2 {
+    border-bottom-color: var(--brand-700);
+  }
+  .cs-story__block--result p {
+    color: var(--ink);
+  }
+  @media (min-width: 1000px) {
+    .cs-story__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 3.5rem;
+    }
+  }
+
+  .cs-system {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  .cs-system__title {
+    font-size: var(--text-h3);
+    margin-bottom: 2rem;
+  }
+  .cs-shot {
+    margin: 3rem 0 0;
+  }
+  .cs-shot :global(.frame__shell) {
+    background: var(--surface);
+  }
+
+  .cs-body {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+  }
+  .cs-body__grid {
+    display: grid;
+    gap: 3rem;
+  }
+  .cs-body .prose :global(h2) {
+    font-size: var(--text-h3);
+  }
+  .cs-body .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .cs-body .prose :global(p) {
+    color: var(--ink-muted);
+    line-height: 1.7;
+  }
+  .cs-aside {
+    display: grid;
+    gap: 2rem;
+    align-content: start;
+  }
+  .cs-aside h2 {
+    font-family: var(--font-sans);
+    font-stretch: normal;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 0.75rem;
+  }
+  .cs-aside ul {
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+  .cs-aside li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line-strong);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink-strong);
+  }
+  @media (min-width: 1000px) {
+    .cs-body__grid {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.7fr);
+      gap: 6rem;
+    }
+    .cs-aside {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+
+  .cs-next {
+    padding-block: clamp(3rem, 2rem + 3vw, 5rem);
+    border-top: 1px solid var(--line);
+  }
+  .cs-next__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .cs-next :global(.cs--compact) {
+    max-width: 48rem;
+  }
+</style>

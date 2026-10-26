@@ -1,0 +1,14 @@
+{
+  "name": "Lumko Business Technology Partners",
+  "short_name": "Lumko",
+  "description": "Technology expertise for organisations: software, infrastructure, data and integrated technology across Southern Africa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#150479",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

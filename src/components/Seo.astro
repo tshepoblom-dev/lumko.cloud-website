@@ -1,0 +1,141 @@
+---
+/**
+ * <Seo> — one component that emits every per-page head tag we care about:
+ * title, description, canonical, Open Graph, Twitter, robots, and JSON-LD.
+ *
+ * Site-wide Organization + WebSite structured data is emitted here too, so it
+ * is present on every page. Pass `schema` for page-specific graphs
+ * (Service, Article, BreadcrumbList, FAQPage, ...).
+ */
+import { SITE, CONTACT, SOCIAL } from '@/consts';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path or absolute URL for the canonical + og:url. Defaults to current URL. */
+  canonicalPath?: string;
+  /** Public path to a 1200x630 image, or absolute URL. */
+  image?: string;
+  imageAlt?: string;
+  /** og:type — "website" for most pages, "article" for insights/case studies. */
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  /** Extra JSON-LD graph objects for this page. */
+  schema?: Record<string, unknown>[];
+  /** Article-specific hints (only used when ogType === "article"). */
+  publishedTime?: string;
+  modifiedTime?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  image = '/og/lumko-default.png',
+  imageAlt = 'Lumko: technology expertise for organisations with serious work to do',
+  ogType = 'website',
+  noindex = false,
+  schema = [],
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+
+const site = Astro.site ?? new URL(SITE.origin);
+const rawPath = canonicalPath ?? Astro.url.pathname;
+// build.format 'file' gives '/about.html' — canonical URLs are the clean form.
+const stripped = rawPath.replace(/\.html$/, '').replace(/\/index$/, '/');
+const cleanPath = stripped === '/' || stripped === '' ? '/' : stripped.replace(/\/+$/, '');
+const canonical = new URL(cleanPath, site).href;
+const ogImage = image.startsWith('http') ? image : new URL(image, site).href;
+const fullTitle =
+  title === SITE.titleSuffix ? title : `${title} | ${SITE.titleSuffix}`;
+
+const organization = {
+  '@type': ['Organization', 'ProfessionalService'],
+  '@id': `${site.origin}/#organization`,
+  name: SITE.name,
+  legalName: SITE.fullName,
+  slogan: SITE.tagline,
+  description:
+    'Lumko is a business technology partner based in Bloemfontein, South Africa, bringing together software, infrastructure, data and integrated-technology expertise for organisations across Southern Africa.',
+  url: `${site.origin}/`,
+  logo: {
+    '@type': 'ImageObject',
+    url: new URL('/brand/lumko-logo.png', site).href,
+  },
+  email: CONTACT.email,
+  telephone: CONTACT.phoneE164,
+  areaServed: CONTACT.serviceArea.map((name) => ({ '@type': 'Country', name })),
+  knowsAbout: [
+    'Technology consulting',
+    'Custom software development',
+    'IT infrastructure consulting',
+    'ICT consulting',
+    'Data analytics',
+    'Systems integration',
+    'Hardware and software integration',
+    'Digital transformation',
+  ],
+  geo: { '@type': 'GeoCoordinates', latitude: CONTACT.geo.lat, longitude: CONTACT.geo.lng },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: CONTACT.locality,
+    addressRegion: CONTACT.region,
+    addressCountry: CONTACT.countryCode,
+  },
+  sameAs: [SOCIAL.linkedin],
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${site.origin}/#website`,
+  url: `${site.origin}/`,
+  name: SITE.name,
+  publisher: { '@id': `${site.origin}/#organization` },
+  inLanguage: 'en-ZA',
+};
+
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [organization, website, ...schema],
+};
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{
+  noindex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+  )
+}
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.fullName} />
+<meta property="og:locale" content={SITE.locale} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+{ogType === 'article' && publishedTime && (
+  <meta property="article:published_time" content={publishedTime} />
+)}
+{ogType === 'article' && modifiedTime && (
+  <meta property="article:modified_time" content={modifiedTime} />
+)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(graph)}
+  is:inline
+/>

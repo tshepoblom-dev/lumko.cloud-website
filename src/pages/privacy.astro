@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { CONTACT, SITE } from '@/consts';
+
+const updated = '6 October 2026';
+---
+
+<BaseLayout
+  title="Privacy Notice"
+  description="How Lumko collects, uses and protects personal information submitted through lumko.cloud, in line with the Protection of Personal Information Act (POPIA)."
+>
+  <section class="privacy">
+    <div class="container container--narrow">
+      <Breadcrumbs items={[{ label: 'Privacy' }]} />
+      <p class="index-label privacy__label">Privacy</p>
+      <h1>Privacy notice</h1>
+      <p class="privacy__updated">Last updated {updated}</p>
+
+      <div class="prose">
+        <p>
+          This notice explains how {SITE.fullName} (“Lumko”, “we”) handles
+          personal information collected through this website. We process
+          personal information in line with South Africa’s Protection of
+          Personal Information Act, 2013 (POPIA).
+        </p>
+
+        <h2>What we collect</h2>
+        <p>When you use the contact form, we collect the details you choose to give us:</p>
+        <ul>
+          <li>your name, organisation and, optionally, your role;</li>
+          <li>your email address and, optionally, your phone number;</li>
+          <li>your message and your preferred contact method.</li>
+        </ul>
+        <p>
+          Like most websites, our hosting provider records standard technical
+          information (such as IP address and browser type) in server logs for
+          security and to keep the site running.
+        </p>
+
+        <h2>Why we use it</h2>
+        <p>
+          We use your details only to respond to your enquiry and, where you
+          ask us to, to discuss working together. We do not sell your
+          information or add you to marketing lists without your agreement.
+        </p>
+
+        <h2>Who can see it</h2>
+        <p>
+          Your enquiry is sent by email to the Lumko team. Where we bring in a
+          specialist from our network to help answer your enquiry, we share
+          only what is needed, under a duty of confidentiality.
+        </p>
+
+        <h2>How long we keep it</h2>
+        <p>
+          We keep enquiries for as long as needed to respond and to manage any
+          resulting relationship, then delete them unless the law requires
+          otherwise.
+        </p>
+
+        <h2>Third-party services</h2>
+        <p>
+          If you choose to book a call through Calendly or message us on
+          WhatsApp, those services process your information under their own
+          privacy policies.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          You may ask to see, correct or delete the personal information we
+          hold about you, or object to how we use it. Contact us at
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>. You also have
+          the right to lodge a complaint with the Information Regulator of
+          South Africa.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          {SITE.fullName}, {CONTACT.locality}, {CONTACT.region}, {CONTACT.country}.
+          Email <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> or call
+          <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phoneDisplay}</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .privacy {
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3rem) var(--section-y);
+  }
+  .privacy__label {
+    margin-top: clamp(2rem, 1.5rem + 3vw, 4rem);
+  }
+  .privacy h1 {
+    margin-top: 1rem;
+    font-size: var(--text-h1);
+    letter-spacing: var(--tracking-display);
+  }
+  .privacy__updated {
+    margin: 0.75rem 0 2.5rem;
+    font-size: var(--text-sm);
+    color: var(--ink-subtle);
+  }
+  .privacy .prose :global(h2) {
+    font-size: var(--text-h4);
+  }
+  .privacy .prose :global(p),
+  .privacy .prose :global(li) {
+    color: var(--ink-muted);
+  }
+</style>

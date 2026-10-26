@@ -1,0 +1,685 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import NetworkMesh from '@/components/NetworkMesh.astro';
+import MediaFrame from '@/components/MediaFrame.astro';
+import ServiceIndex from '@/components/ServiceIndex.astro';
+import SignalChain from '@/components/SignalChain.astro';
+import CaseStudyCard from '@/components/CaseStudyCard.astro';
+import Lifecycle from '@/components/Lifecycle.astro';
+import SeminarNote from '@/components/SeminarNote.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import skyline from '@/assets/photos/johannesburg-skyline.jpg';
+import fieldEngineer from '@/assets/photos/field-engineer-tablet.jpg';
+import workingSession from '@/assets/photos/team-working-session.jpg';
+import { PRIMARY_CTA, SECONDARY_CTA, NETWORK_CTA } from '@/consts';
+import { STRATEGIC_INDUSTRIES, OTHER_INDUSTRIES } from '@/data/industries';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const [lead, ...rest] = work.filter((w) => w.data.featured);
+const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
+---
+
+<BaseLayout
+  title="Technology Consulting & Business Technology Partner in South Africa"
+  description="Lumko brings together software, infrastructure, data and integrated-technology expertise to help organisations across Southern Africa solve complex technology problems. Based in Bloemfontein."
+  canonicalPath="/"
+>
+  <!-- Hero: the city at dusk, with the Lumko mesh drawn into the sky -->
+  <section class="hero" data-surface="invert">
+    <div class="hero__media">
+      <Image
+        src={skyline}
+        alt="Johannesburg city skyline silhouetted against the setting sun."
+        widths={[640, 960, 1440, 1920]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+        class="hero__photo"
+      />
+      <div class="hero__shade" aria-hidden="true"></div>
+    </div>
+    <div class="hero__mesh" aria-hidden="true">
+      <NetworkMesh seed={7} count={26} width={720} height={420} highlights={4} />
+    </div>
+    <div class="container container--wide hero__inner">
+      <p class="index-label">Business technology partners</p>
+      <h1 class="display hero__title">
+        Technology expertise for organisations with serious work to do.
+      </h1>
+      <p class="lead hero__lead">
+        We bring software, infrastructure, data and ICT expertise together to
+        build systems that work in the real world.
+      </p>
+      <div class="hero__actions">
+        <Button href={PRIMARY_CTA.href} size="lg" iconEnd="ph:arrow-right-light" data-analytics="primary_cta_click">
+          {PRIMARY_CTA.label}
+        </Button>
+        <a href={SECONDARY_CTA.href} class="link-arrow">
+          <span>{SECONDARY_CTA.label}</span>
+          <Icon name="ph:arrow-right-light" aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Credibility ledger (dense) -->
+  <section class="section ledger" aria-labelledby="ledger-heading">
+    <div class="container container--wide ledger__inner">
+      <div class="ledger__intro" data-reveal>
+        <h2 id="ledger-heading">Work that runs real operations.</h2>
+        <p>Based in Bloemfontein, working across Southern Africa.</p>
+      </div>
+      <ul class="ledger__list" role="list">
+        {work.map((w, i) => (
+          <li data-reveal style={`--reveal-i:${i}`}>
+            <a href={`/work/${w.id}`}>
+              <span class="ledger__sector">{w.data.sector}</span>
+              <span class="ledger__what">{w.data.title}</span>
+              <span class="ledger__who">{w.data.client}</span>
+              <Icon name="ph:arrow-right-light" class="ledger__arrow" aria-hidden="true" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- What we do: the problem framed as the header, then the index -->
+  <section class="section services" aria-labelledby="services-heading">
+    <div class="container container--wide">
+      <header class="stack-head" data-reveal>
+        <h2 id="services-heading" class="statement">Most technology problems don’t arrive in one category.</h2>
+        <p>So we work across five, as a defined project or an ongoing partnership.</p>
+      </header>
+      <ServiceIndex />
+    </div>
+  </section>
+
+  <!-- Integrated technology: copy + field photo, then the schematic -->
+  <section class="section integrated" aria-labelledby="integrated-heading">
+    <div class="container container--wide">
+      <div class="integrated__head">
+        <div data-reveal>
+          <p class="index-label">Integrated technology</p>
+          <h2 id="integrated-heading" class="statement">Technology that doesn’t stop at the screen.</h2>
+          <p class="lead">
+            Vehicles, machines, sensors in a field. We work from the device to
+            the decision it informs.
+          </p>
+          <a href="/work/ifalcontrace" class="link-arrow integrated__link">
+            <span>How iFalconTrace connects vehicles to operators</span>
+            <Icon name="ph:arrow-right-light" aria-hidden="true" />
+          </a>
+        </div>
+        <div class="integrated__photo" data-reveal style="--reveal-i:1">
+          <MediaFrame
+            src={fieldEngineer}
+            alt="An engineer in a hard hat and high-visibility coveralls checks a tablet on an industrial site."
+            ratio="4 / 3"
+            widths={[480, 720, 1000]}
+            sizes="(min-width: 1000px) 44vw, 100vw"
+          />
+        </div>
+      </div>
+      <div class="integrated__chain" data-reveal>
+        <SignalChain />
+      </div>
+    </div>
+  </section>
+
+  <!-- Industries: bento, one cell per item -->
+  <section class="section industries" aria-labelledby="industries-heading">
+    <div class="container container--wide">
+      <header class="industries__head" data-reveal>
+        <h2 id="industries-heading">Where the work is complex, and the stakes are operational.</h2>
+        <a href="/industries" class="link-arrow">
+          <span>Industries we work in</span>
+          <Icon name="ph:arrow-right-light" aria-hidden="true" />
+        </a>
+      </header>
+      <div class="bento">
+        <a href={`/industries#${mining.id}`} class="bento__cell bento__cell--lead" data-reveal>
+          <div class="bento__mesh" aria-hidden="true">
+            <NetworkMesh seed={31} count={14} width={360} height={360} highlights={2} animate={false} />
+          </div>
+          <h3>{mining.name}</h3>
+          <p>{mining.summary}</p>
+          <Icon name="ph:arrow-right-light" class="bento__arrow" aria-hidden="true" />
+        </a>
+        <a href={`/industries#${finance.id}`} class="bento__cell bento__cell--paper" data-reveal style="--reveal-i:1">
+          <h3>{finance.name}</h3>
+          <p>{finance.summary}</p>
+          <Icon name="ph:arrow-right-light" class="bento__arrow" aria-hidden="true" />
+        </a>
+        <a href={`/industries#${agri.id}`} class="bento__cell bento__cell--line" data-reveal style="--reveal-i:2">
+          <h3>{agri.name}</h3>
+          <p>{agri.summary}</p>
+          <Icon name="ph:arrow-right-light" class="bento__arrow" aria-hidden="true" />
+        </a>
+        <div class="bento__cell bento__cell--also" data-reveal style="--reveal-i:3">
+          <h3>Also working with</h3>
+          <p>
+            {OTHER_INDUSTRIES.map((o, i) => (
+              <>
+                <span>{o.name}</span>{i < OTHER_INDUSTRIES.length - 1 ? ', ' : '.'}
+              </>
+            ))}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Selected work: asymmetric lead + pair -->
+  <section class="section work" aria-labelledby="work-heading">
+    <div class="container container--wide">
+      <header class="work__head" data-reveal>
+        <h2 id="work-heading">Systems that organisations depend on.</h2>
+        <a href={SECONDARY_CTA.href} class="link-arrow">
+          <span>{SECONDARY_CTA.label}</span>
+          <Icon name="ph:arrow-right-light" aria-hidden="true" />
+        </a>
+      </header>
+      {lead && (
+        <div data-reveal>
+          <CaseStudyCard entry={lead} variant="lead" />
+        </div>
+      )}
+      <div class="work__rest">
+        {rest.map((w, i) => (
+          <div data-reveal style={`--reveal-i:${i}`}>
+            <CaseStudyCard entry={w} />
+          </div>
+        ))}
+      </div>
+      <p class="work__smaller" data-reveal>
+        <span>We also help growing businesses with websites, online stores and booking tools.</span>
+        <a href="/work#smaller" class="link-arrow">
+          <span>See smaller projects</span>
+          <Icon name="ph:arrow-right-light" aria-hidden="true" />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Built for the long term: copy + working-session photo, then the timeline -->
+  <section class="section longterm" aria-labelledby="longterm-heading">
+    <div class="container container--wide">
+      <div class="longterm__head">
+        <div class="longterm__copy" data-reveal>
+          <h2 id="longterm-heading" class="statement">Built for the long term.</h2>
+          <p class="longterm__lead">
+            We stay involved after the first release, helping organisations
+            maintain, improve and extend their technology as their needs change.
+          </p>
+          <p class="longterm__network">
+            We deliver the work ourselves, and bring in trusted specialists from
+            a growing network when a problem needs them.
+            <a href={NETWORK_CTA.href} class="link-arrow">
+              <span>{NETWORK_CTA.label}</span>
+              <Icon name="ph:arrow-right-light" aria-hidden="true" />
+            </a>
+          </p>
+        </div>
+        <div class="longterm__photo" data-reveal style="--reveal-i:1">
+          <MediaFrame
+            src={workingSession}
+            alt="A team in a meeting room reviews a reporting dashboard presented on a large screen."
+            ratio="3 / 2"
+            widths={[480, 720, 1000]}
+            sizes="(min-width: 1000px) 44vw, 100vw"
+          />
+        </div>
+      </div>
+      <Lifecycle />
+    </div>
+  </section>
+
+  <SeminarNote />
+
+  <CtaBlock />
+</BaseLayout>
+
+<style>
+  /* ---- Hero ----
+     Wide screens: the photo fills the section and the text sits in the empty
+     sky. Narrower screens: text on solid indigo, the photo as a strip below,
+     so the sunset glow never sits behind the copy. */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    background: var(--brand-900);
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    order: 1;
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem) 2.5rem;
+  }
+  .hero__title {
+    margin-top: 1.5rem;
+    font-size: clamp(2.55rem, 1.2rem + 4.1vw, 4.6rem);
+    max-width: 30ch;
+  }
+  .hero__lead {
+    margin-top: 1.5rem;
+    max-width: 40ch;
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: 2.25rem;
+  }
+  .hero__media {
+    position: relative;
+    order: 2;
+  }
+  .hero__photo {
+    display: block;
+    width: 100%;
+    height: clamp(13rem, 50vw, 22rem);
+    object-fit: cover;
+    object-position: 52% 52%;
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--brand-900) 0%, rgba(11, 3, 64, 0) 45%);
+  }
+  .hero__mesh {
+    display: none;
+  }
+
+  @media (min-width: 1200px) {
+    .hero {
+      display: block;
+      min-height: clamp(540px, 78dvh, 800px);
+    }
+    .hero__inner {
+      padding-block: clamp(4rem, 2rem + 4vw, 6rem) 4rem;
+    }
+    .hero__media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero__photo {
+      height: 100%;
+      object-position: 50% 50%;
+      object-fit:cover;
+    }
+    /* indigo from the left and top keeps the copy AA over the sky and pulls
+       the photo into the brand palette */
+    .hero__shade {
+      background:
+        linear-gradient(90deg, rgba(11, 3, 64, 0.88) 0%, rgba(11, 3, 64, 0.55) 45%, rgba(11, 3, 64, 0) 75%),
+        linear-gradient(180deg, rgba(11, 3, 64, 0.55) 0%, rgba(11, 3, 64, 0) 40%);
+    }
+    .hero__mesh {
+      --mesh-line: rgba(255, 255, 255, 0.18);
+      --mesh-node: rgba(255, 255, 255, 0.45);
+      display: block;
+      position: absolute;
+      z-index: 1;
+      /* sits in the sky to the right of the copy, settling onto the city */
+      top: 49%;
+      right: 2%;
+      width: min(30vw, 440px);
+      pointer-events: none;
+    }
+  }
+
+  /* ---- Ledger ---- */
+  .ledger {
+    background: var(--paper);
+  }
+  .ledger__inner {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .ledger__intro h2 {
+    max-width: 14ch;
+  }
+  .ledger__intro p {
+    margin-top: 1rem;
+    font-size: var(--text-sm);
+    color: var(--ink-subtle);
+    max-width: 40ch;
+  }
+  .ledger__list {
+    list-style: none;
+    border-top: 1px solid var(--line-strong);
+  }
+  .ledger__list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.25rem;
+    grid-template-areas: 'sector arrow' 'what arrow' 'who arrow';
+    gap: 0.15rem 1rem;
+    padding: 1.05rem 0;
+    border-bottom: 1px solid var(--line-strong);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color var(--dur) var(--ease), padding var(--dur-slow) var(--ease-heavy);
+  }
+  .ledger__sector {
+    grid-area: sector;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .ledger__what {
+    grid-area: what;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 600;
+    font-size: var(--text-h4);
+    color: var(--ink-strong);
+    line-height: 1.25;
+  }
+  .ledger__who {
+    grid-area: who;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .ledger__arrow {
+    grid-area: arrow;
+    align-self: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--brand-700);
+    opacity: 0.35;
+    transition: opacity var(--dur) var(--ease), transform var(--dur-slow) var(--ease-heavy);
+  }
+  .ledger__list a:hover .ledger__what {
+    color: var(--brand-700);
+  }
+  .ledger__list a:hover .ledger__arrow {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+  @media (min-width: 900px) {
+    .ledger__list a {
+      grid-template-columns: 13rem minmax(0, 1.3fr) minmax(0, 1fr) 1.25rem;
+      grid-template-areas: 'sector what who arrow';
+      align-items: baseline;
+      gap: 1.5rem;
+    }
+    .ledger__list a:hover {
+      background: rgba(255, 255, 255, 0.7);
+      padding-inline: 0.75rem;
+    }
+  }
+  @media (min-width: 1100px) {
+    .ledger__inner {
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.6fr);
+      gap: 4.5rem;
+    }
+  }
+
+  /* ---- Stacked section header ---- */
+  .stack-head {
+    margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  }
+  .stack-head h2 {
+    max-width: 18ch;
+  }
+  .stack-head p {
+    margin-top: 1.25rem;
+    color: var(--ink-muted);
+    max-width: 60ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  /* ---- Integrated technology ---- */
+  .integrated {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  .integrated__head {
+    display: grid;
+    gap: 2.5rem 4rem;
+    align-items: center;
+    margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  }
+  .integrated__head h2 {
+    margin: 1rem 0 1.5rem;
+    max-width: 14ch;
+  }
+  .integrated__head .lead {
+    max-width: 40ch;
+  }
+  .integrated__link {
+    margin-top: 1.75rem;
+  }
+  .integrated__photo :global(.frame__shell) {
+    background: var(--surface);
+  }
+  .integrated__photo :global(img) {
+    object-position: 60% 40%;
+  }
+  .integrated__chain {
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 48px -32px rgba(21, 4, 121, 0.25);
+  }
+  @media (min-width: 1000px) {
+    .integrated__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    }
+  }
+
+  /* ---- Industries bento ---- */
+  .industries__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .industries__head h2 {
+    max-width: 18ch;
+  }
+  .bento {
+    display: grid;
+    gap: 1rem;
+  }
+  .bento__cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    border-radius: var(--radius-lg);
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform var(--dur-slow) var(--ease-heavy), box-shadow var(--dur-slow) var(--ease-heavy);
+  }
+  a.bento__cell:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 40px -28px rgba(21, 4, 121, 0.35);
+  }
+  .bento__cell h3 {
+    font-size: var(--text-h3);
+    max-width: 14ch;
+  }
+  .bento__cell p {
+    color: var(--ink-muted);
+    max-width: 44ch;
+  }
+  .bento__cell--lead {
+    background: var(--brand-050);
+    border: 1px solid var(--brand-100);
+    min-height: 20rem;
+  }
+  .bento__cell--lead h3 {
+    font-size: var(--text-h2);
+    margin-top: auto;
+  }
+  .bento__mesh {
+    position: absolute;
+    top: -2rem;
+    right: -2rem;
+    width: 15rem;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  .bento__cell--paper {
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .bento__cell--line {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+  }
+  .bento__cell--also {
+    background: var(--surface);
+    border: 1px dashed var(--line-strong);
+  }
+  .bento__cell--also h3 {
+    max-width: none;
+    font-family: var(--font-sans);
+    font-stretch: normal;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .bento__cell--also p {
+    max-width: none;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h4);
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--ink-muted);
+  }
+  .bento__cell--also span {
+    color: var(--ink-strong);
+  }
+  .bento__arrow {
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: auto;
+    color: var(--brand-700);
+    transition: transform var(--dur-slow) var(--ease-heavy);
+  }
+  .bento__cell--lead .bento__arrow {
+    margin-top: 0.5rem;
+  }
+  a.bento__cell:hover .bento__arrow {
+    transform: translateX(4px);
+  }
+  @media (min-width: 900px) {
+    .bento {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows: minmax(12rem, auto) minmax(12rem, auto) auto;
+    }
+    .bento__cell--lead {
+      grid-column: 1 / span 7;
+      grid-row: 1 / span 2;
+    }
+    .bento__cell--paper,
+    .bento__cell--line {
+      grid-column: 8 / span 5;
+    }
+    .bento__cell--also {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---- Work ---- */
+  .work {
+    border-top: 1px solid var(--line);
+  }
+  .work__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  }
+  .work__head h2 {
+    max-width: 18ch;
+  }
+  .work__rest {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+  .work__smaller {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+    margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+    padding: 1.25rem 1.5rem;
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  @media (min-width: 900px) {
+    .work__rest {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+  }
+
+  /* ---- Long term ---- */
+  .longterm {
+    background: var(--paper);
+  }
+  .longterm__head {
+    display: grid;
+    gap: 2.5rem 4rem;
+    align-items: center;
+    margin-bottom: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+  .longterm__copy .longterm__lead {
+    margin-top: 1.5rem;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 44ch;
+  }
+  .longterm__network {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--brand-100);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    max-width: 46ch;
+  }
+  .longterm__network .link-arrow {
+    justify-self: start;
+  }
+  .longterm__photo :global(.frame__shell) {
+    background: var(--surface);
+  }
+  @media (min-width: 1000px) {
+    .longterm__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    }
+  }
+</style>

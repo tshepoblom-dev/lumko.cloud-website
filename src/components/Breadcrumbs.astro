@@ -1,0 +1,86 @@
+---
+import { Icon } from 'astro-icon/components';
+import { SITE } from '@/consts';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+  /** Visually hide the trail but keep it for a11y + schema (e.g. when the page
+      design shows its own path). Defaults to visible. */
+  visible?: boolean;
+}
+
+const { items, visible = true } = Astro.props;
+const site = Astro.site ?? new URL(SITE.origin);
+
+const withHome: Crumb[] = [{ label: 'Home', href: '/' }, ...items];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: withHome.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.label,
+    ...(c.href ? { item: new URL(c.href, site).href } : {}),
+  })),
+};
+---
+
+<nav
+  class:list={['breadcrumbs', { 'visually-hidden': !visible }]}
+  aria-label="Breadcrumb"
+>
+  <ol role="list">
+    {withHome.map((c, i) => (
+      <li>
+        {c.href && i < withHome.length - 1 ? (
+          <a href={c.href}>{c.label}</a>
+        ) : (
+          <span aria-current="page">{c.label}</span>
+        )}
+        {i < withHome.length - 1 && (
+          <Icon name="ph:caret-right-light" class="breadcrumbs__sep" aria-hidden="true" />
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+
+<style>
+  .breadcrumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--text-xs);
+    color: var(--ink-subtle);
+  }
+  .breadcrumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .breadcrumbs a {
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+  .breadcrumbs a:hover {
+    color: var(--brand-700);
+    text-decoration: underline;
+  }
+  .breadcrumbs [aria-current='page'] {
+    color: var(--ink);
+  }
+  .breadcrumbs__sep {
+    width: 0.85em;
+    height: 0.85em;
+    color: var(--line-strong);
+  }
+</style>

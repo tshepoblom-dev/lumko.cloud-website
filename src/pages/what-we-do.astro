@@ -1,0 +1,251 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import { SERVICES } from '@/data/services';
+import { SITE, PRIMARY_CTA } from '@/consts';
+
+const ENGAGEMENTS = [
+  {
+    name: 'Advisory',
+    body: 'An assessment, architecture or roadmap before money is committed. Useful when the problem is clear but the route to solving it isn’t.',
+  },
+  {
+    name: 'Project',
+    body: 'A defined piece of work with agreed scope, phases and acceptance: a new platform, an integration, an infrastructure change.',
+  },
+  {
+    name: 'Ongoing partnership',
+    body: 'Support, improvement and extension over time. We stay responsible for the technology we deliver and help it grow with the organisation.',
+  },
+];
+
+const schema = SERVICES.map((s) => ({
+  '@type': 'Service',
+  name: s.name,
+  description: s.summary,
+  serviceType: s.capabilities.join(', '),
+  provider: { '@id': `${SITE.origin}/#organization` },
+  areaServed: 'Southern Africa',
+  url: `${SITE.origin}/what-we-do#${s.id}`,
+}));
+---
+
+<BaseLayout
+  title="What We Do: Software, Infrastructure, Data & Technology Consulting"
+  description="Custom software development, IT infrastructure and ICT consulting, data analytics, hardware and software integration, and technology consulting for organisations across South Africa and Southern Africa."
+  schema={schema}
+>
+  <PageHero
+    label="What we do"
+    title="The expertise a technology problem actually needs."
+    lead="Five areas of expertise, delivered by one partner. Most of the problems we are brought in to solve draw on more than one of them, so we plan and deliver them together."
+    seed={5}
+  >
+    <nav class="toc" aria-label="On this page">
+      <ol role="list">
+        {SERVICES.map((s) => (
+          <li><a href={`#${s.id}`}>{s.name}</a></li>
+        ))}
+      </ol>
+    </nav>
+  </PageHero>
+
+  <div class="container container--wide">
+    <Breadcrumbs items={[{ label: 'What we do' }]} visible={false} />
+  </div>
+
+  {SERVICES.map((s, i) => (
+    <section id={s.id} class:list={['svc', { 'svc--alt': i % 2 === 1 }]} aria-labelledby={`${s.id}-h`}>
+      <div class="container container--wide svc__grid">
+        <div class="svc__head" data-reveal>
+          <h2 id={`${s.id}-h`}>{s.name}</h2>
+        </div>
+        <div class="svc__body" data-reveal style="--reveal-i:1">
+          {s.body.map((p, j) => <p class:list={{ 'svc__lead': j === 0 }}>{p}</p>)}
+          <p class="svc__typically">
+            <span>A typical engagement</span>
+            {s.typically}
+          </p>
+        </div>
+        <div class="svc__caps" data-reveal style="--reveal-i:2">
+          <h3>Capabilities</h3>
+          <ul role="list">{s.capabilities.map((c) => <li>{c}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section engage" aria-labelledby="engage-h">
+    <div class="container container--wide">
+      <div class="engage__head" data-reveal>
+        <p class="index-label">How we engage</p>
+        <h2 id="engage-h" class="statement">Advice, delivery, or both, over time.</h2>
+      </div>
+      <ol class="engage__list" role="list">
+        {ENGAGEMENTS.map((e, i) => (
+          <li data-reveal style={`--reveal-i:${i}`}>
+            <h3>{e.name}</h3>
+            <p>{e.body}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="engage__note" data-reveal>
+        Not sure which you need? That is a normal place to start.
+        <a href="/contact" class="link-arrow"><span>{PRIMARY_CTA.label}</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
+      </p>
+    </div>
+  </section>
+
+  <CtaBlock heading="Bring us the problem, not the specification." />
+</BaseLayout>
+
+<style>
+  .toc {
+    margin-top: 2.75rem;
+  }
+  .toc ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+  }
+  .toc a {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--brand-700);
+  }
+
+  .svc {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: var(--header-h);
+  }
+  .svc--alt {
+    background: var(--paper);
+  }
+  .svc__grid {
+    display: grid;
+    gap: 2rem;
+  }
+  .svc__head h2 {
+    max-width: 12ch;
+  }
+  .svc__body p {
+    color: var(--ink-muted);
+    max-width: 58ch;
+  }
+  .svc__body p + p {
+    margin-top: 1rem;
+  }
+  .svc__body .svc__lead {
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .svc__body .svc__typically {
+    margin-top: 1.75rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--signal);
+    font-size: var(--text-sm);
+    color: var(--ink);
+  }
+  .svc__typically span {
+    display: block;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 0.3rem;
+  }
+  .svc__caps h3 {
+    font-family: var(--font-sans);
+    font-stretch: normal;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 0.75rem;
+  }
+  .svc__caps ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .svc__caps li {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    line-height: 1.3;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink-strong);
+  }
+  @media (min-width: 1000px) {
+    .svc__grid {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 0.75fr);
+      gap: 4rem;
+    }
+  }
+
+  .engage__head h2 {
+    margin-top: 1rem;
+    max-width: 16ch;
+  }
+  .engage__list {
+    list-style: none;
+    display: grid;
+    gap: 0;
+    margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+    border-top: 1px solid var(--line-strong);
+  }
+  .engage__list li {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .engage__list h3 {
+    margin: 0 0 0.6rem;
+  }
+  .engage__list p {
+    color: var(--ink-muted);
+    max-width: 40ch;
+  }
+  .engage__note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin-top: 2rem;
+    color: var(--ink-muted);
+  }
+  @media (min-width: 900px) {
+    .engage__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 0;
+    }
+    .engage__list li {
+      padding: 1.75rem 2rem 0 0;
+      border-bottom: 0;
+      border-top: 1px solid var(--line-strong);
+    }
+    .engage__list li + li {
+      padding-left: 2rem;
+      border-left: 1px solid var(--line);
+    }
+  }
+</style>

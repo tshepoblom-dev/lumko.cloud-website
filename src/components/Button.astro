@@ -1,0 +1,233 @@
+---
+/**
+ * <Button> — renders an <a> when `href` is set, otherwise a <button>.
+ * Variants: primary | secondary | quiet. One radius, AA contrast in both the
+ * light and inverted (deep-indigo) surface contexts.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary' | 'quiet';
+  size?: 'sm' | 'md' | 'lg';
+  /** Phosphor icon name, e.g. "ph:arrow-right-light". Rendered after the label. */
+  iconEnd?: string;
+  iconStart?: string;
+  fullWidth?: boolean;
+  class?: string;
+  rel?: string;
+  target?: string;
+  'aria-label'?: string;
+  id?: string;
+  'data-analytics'?: string;
+}
+
+const {
+  href,
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
+  iconEnd,
+  iconStart,
+  fullWidth = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const classes = [
+  'btn',
+  `btn--${variant}`,
+  `btn--${size}`,
+  fullWidth ? 'btn--block' : null,
+  iconEnd && variant !== 'quiet' ? 'btn--well' : null,
+  iconEnd?.includes('up-right') ? 'btn--diagonal' : null,
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag
+  class={classes}
+  href={href}
+  type={href ? undefined : type}
+  {...rest}
+>
+  {iconStart && <Icon name={iconStart} class="btn__icon" aria-hidden="true" />}
+  <span class="btn__label"><slot /></span>
+  {iconEnd && (
+    variant === 'quiet' ? (
+      <Icon name={iconEnd} class="btn__icon" aria-hidden="true" />
+    ) : (
+      <span class="btn__well" aria-hidden="true">
+        <Icon name={iconEnd} class="btn__icon" />
+      </span>
+    )
+  )}
+</Tag>
+
+<style>
+  /* selector carries an element to beat ambient `a { color }` rules from
+     surrounding components (nav, footer) at equal class specificity */
+  a.btn,
+  button.btn {
+    color: var(--_fg);
+    text-decoration: none;
+  }
+
+  .btn {
+    --_bg: var(--brand-700);
+    --_fg: #fff;
+    --_bd: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    line-height: 1;
+    letter-spacing: 0.005em;
+    white-space: nowrap;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--_bd);
+    background: var(--_bg);
+    color: var(--_fg);
+    padding: 0.75rem 1.15rem;
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+
+  .btn__label {
+    text-decoration: none;
+  }
+  .btn__icon {
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+    transition: transform var(--dur-slow) var(--ease-heavy);
+  }
+  .btn:hover .btn__icon:last-child {
+    transform: translateX(3px);
+  }
+  .btn--diagonal:hover .btn__icon:last-child {
+    transform: translate(2px, -2px);
+  }
+
+  /* Trailing icon in its own square well, flush to the right edge: a
+     machined detail rather than an arrow floating beside the label. */
+  .btn--well {
+    padding-right: 0.3rem;
+    gap: 0.9rem;
+  }
+  .btn__well {
+    --_well: color-mix(in srgb, #000 22%, var(--_bg));
+    display: inline-grid;
+    place-items: center;
+    width: 2.15em;
+    height: 2.15em;
+    margin-block: -0.45em;
+    border-radius: var(--radius-xs);
+    background: var(--_well);
+    overflow: hidden;
+    transition: background-color var(--dur) var(--ease);
+  }
+  .btn--sm.btn--well {
+    padding-right: 0.25rem;
+    gap: 0.6rem;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* primary — indigo fill */
+  .btn--primary:hover {
+    --_bg: var(--brand-600);
+  }
+  .btn--primary:hover {
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* secondary — outline */
+  .btn--secondary {
+    --_bg: transparent;
+    --_fg: var(--brand-700);
+    --_bd: var(--line-strong);
+  }
+  .btn--secondary:hover {
+    --_bd: var(--brand-700);
+    --_bg: var(--brand-050);
+  }
+  .btn--secondary .btn__well {
+    --_well: var(--brand-050);
+  }
+
+  /* quiet — text + arrow, no box */
+  .btn--quiet {
+    --_bg: transparent;
+    --_fg: var(--brand-700);
+    --_bd: transparent;
+    padding-inline: 0.15rem;
+  }
+  .btn--quiet .btn__label {
+    text-decoration: underline;
+    text-decoration-color: var(--link-underline);
+    text-underline-offset: 0.2em;
+  }
+  .btn--quiet:hover .btn__label {
+    text-decoration-color: var(--brand-700);
+  }
+
+  /* sizes */
+  .btn--sm {
+    font-size: var(--text-xs);
+    padding: 0.55rem 0.85rem;
+  }
+  .btn--lg {
+    font-size: var(--text-base);
+    padding: 0.95rem 1.5rem;
+  }
+  .btn--block {
+    display: flex;
+    width: 100%;
+  }
+
+  /* inverted surface (deep-indigo sections) */
+  :global([data-surface='invert']) .btn--primary {
+    --_bg: #fff;
+    --_fg: var(--brand-700);
+  }
+  :global([data-surface='invert']) .btn--primary:hover {
+    --_bg: #eceafa;
+  }
+  :global([data-surface='invert']) .btn__well {
+    --_well: var(--brand-100);
+  }
+  :global([data-surface='invert']) .btn--secondary {
+    --_fg: #fff;
+    --_bd: rgba(255, 255, 255, 0.45);
+  }
+  :global([data-surface='invert']) .btn--secondary:hover {
+    --_bd: #fff;
+    --_bg: rgba(255, 255, 255, 0.1);
+  }
+  :global([data-surface='invert']) .btn--quiet {
+    --_fg: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn__icon {
+      transition: none;
+    }
+    .btn:active {
+      transform: none;
+    }
+  }
+</style>

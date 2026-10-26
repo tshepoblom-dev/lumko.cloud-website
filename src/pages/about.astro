@@ -1,0 +1,412 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import ExpertNetwork from '@/components/ExpertNetwork.astro';
+import Lifecycle from '@/components/Lifecycle.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import MediaFrame from '@/components/MediaFrame.astro';
+import rosebank from '@/assets/about/rosebank-conversation.jpg';
+import { SEMINAR, NETWORK_CTA } from '@/consts';
+
+const PRINCIPLES = [
+  {
+    name: 'Understand before recommending',
+    body: 'We start with how the organisation actually works: its people, processes, constraints and risks. Only then do we talk about technology.',
+  },
+  {
+    name: 'Solve the whole problem',
+    body: 'Software, infrastructure, data and devices are planned together, so they work as one system rather than as parts from different suppliers.',
+  },
+  {
+    name: 'Practical over impressive',
+    body: 'We choose proven technology that fits the budget, the environment and the people who will use it. Sometimes the right answer is a smaller change.',
+  },
+  {
+    name: 'Build to hand over',
+    body: 'Documentation, testing, training and clean handover are part of the work. Your organisation should never be locked out of its own systems.',
+  },
+  {
+    name: 'Stay involved',
+    body: 'We support and improve what we deliver, and we stay accountable for it after go-live.',
+  },
+];
+
+const AUDIENCES = [
+  'Medium and large businesses',
+  'Corporates and financial institutions',
+  'Government departments and municipalities',
+  'Development organisations and trusts',
+  'Education and research institutions',
+  'NGOs and community organisations',
+];
+
+const COUNTRIES = ['South Africa', 'Lesotho', 'Namibia', 'Botswana'];
+---
+
+<BaseLayout
+  title="About Lumko: Business Technology Partners in Bloemfontein"
+  description="Lumko is a business technology partner based in Bloemfontein, Free State. We bring together software, infrastructure, data and ICT specialists for organisations across Southern Africa, and stay involved for the long term."
+>
+  <PageHero
+    label="About Lumko"
+    title="A technology partner for organisations, not a vendor for projects."
+    lead="Lumko helps organisations use technology to solve real problems, improve operations and build better ways of working. We bring together the people, technology and expertise each problem needs, and we stay involved as the organisation grows."
+    seed={21}
+  />
+
+  <div class="container container--wide">
+    <Breadcrumbs items={[{ label: 'About' }]} visible={false} />
+  </div>
+
+  <!-- What Lumko is -->
+  <section class="section intro" aria-labelledby="intro-h">
+    <div class="container container--wide intro__grid">
+      <h2 id="intro-h" class="statement" data-reveal>We understand technology. We understand organisations.</h2>
+      <div class="intro__copy" data-reveal style="--reveal-i:1">
+        <p class="intro__lead">
+          Lumko is a business technology partner based in Bloemfontein, in
+          South Africa’s Free State. We work across software engineering,
+          ICT and IT infrastructure, data and analytics, systems integration
+          and hardware-integrated solutions.
+        </p>
+        <p>
+          Organisations rarely have a problem that fits one specialism. A new
+          system touches infrastructure. A data project depends on field
+          capture. A tracking project starts with hardware. We are set up to
+          handle all of it, and to give our clients one relationship and one
+          point of accountability while we do.
+        </p>
+        <p>
+          We are deliberately not a cheap development shop or a reseller of
+          products. We are most useful where the problem is serious, the
+          environment is demanding and the organisation wants a partner for
+          the long term.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Principles -->
+  <section class="section principles" aria-labelledby="principles-h">
+    <div class="container container--wide">
+      <div class="principles__head" data-reveal>
+        <h2 id="principles-h">Five principles behind every engagement.</h2>
+      </div>
+      <ol class="principles__list" role="list">
+        {PRINCIPLES.map((p, i) => (
+          <li data-reveal style={`--reveal-i:${i}`}>
+            <h3>{p.name}</h3>
+            <p>{p.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- The network -->
+  <section class="network" data-surface="invert" aria-labelledby="network-h">
+    <div class="container container--wide network__grid">
+      <div class="network__copy">
+        <p class="index-label" data-reveal>How we resource the work</p>
+        <h2 id="network-h" class="statement" data-reveal>The right expertise for the problem in front of you.</h2>
+        <p data-reveal>
+          We do the work ourselves. When a problem calls for deeper specialist
+          expertise in infrastructure, data or hardware, we bring in trusted
+          professionals from a growing network and work alongside them, so you
+          deal with one team throughout.
+        </p>
+        <p data-reveal>
+          The standards, the documentation and the accountability stay with
+          Lumko, and the knowledge from the project stays with you.
+        </p>
+        <p class="network__join" data-reveal>
+          <span>Are you an ICT professional?</span>
+          <a href={NETWORK_CTA.href} class="link-arrow">
+            <span>{NETWORK_CTA.label}</span>
+            <Icon name="ph:arrow-right-light" aria-hidden="true" />
+          </a>
+        </p>
+      </div>
+      <div class="network__diagram" data-reveal style="--reveal-i:1">
+        <ExpertNetwork />
+      </div>
+    </div>
+  </section>
+
+  <!-- Relationship -->
+  <section class="section relationship" aria-labelledby="rel-h">
+    <div class="container container--wide">
+      <div class="relationship__head" data-reveal>
+        <h2 id="rel-h">More than a project. A technology relationship.</h2>
+        <p>
+          A client often comes to us with one problem. Over time that can grow
+          into infrastructure work, automation, data and reporting, integrated
+          hardware, managed support and strategic advice. We plan for that
+          from the start.
+        </p>
+      </div>
+      <Lifecycle />
+    </div>
+  </section>
+
+  <!-- Who + where -->
+  <section class="section who" aria-label="Who we work with and where">
+    <div class="container container--wide who__grid">
+      <div data-reveal>
+        <h2 class="who__title">Who we work with</h2>
+        <p class="who__flow">
+          {AUDIENCES.map((a, i) => (
+            <>
+              <span>{a}</span>{i < AUDIENCES.length - 2 ? ', ' : i === AUDIENCES.length - 2 ? ' and ' : '.'}
+            </>
+          ))}
+        </p>
+      </div>
+      <div data-reveal style="--reveal-i:1">
+        <h2 class="who__title">Based in South Africa. Working across Southern Africa.</h2>
+        <p class="who__countries">
+          {COUNTRIES.map((c) => <span>{c}</span>)}
+          <span>the wider SADC region</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- People + knowledge sharing -->
+  <section class="section people" aria-labelledby="people-h">
+    <div class="container container--wide people__grid">
+      <div class="people__photo" data-reveal>
+        <MediaFrame
+          src={rosebank}
+          alt="Tshepo Blom of Lumko in conversation with a group of students outdoors at IIE Rosebank College."
+          caption="Tshepo Blom with students at IIE Rosebank College, October 2025."
+          widths={[600, 900, 1200, 1600]}
+          sizes="(min-width: 1000px) 55vw, 100vw"
+          ratio="4 / 3"
+        />
+      </div>
+      <div class="people__copy" data-reveal style="--reveal-i:1">
+        <p class="index-label">People</p>
+        <h2 id="people-h">Led by practitioners, and committed to sharing what we know.</h2>
+        <p>
+          Lumko is led by Tshepo Blom, who works directly with clients on the
+          shape of each engagement and the people needed to deliver it.
+        </p>
+        <p>
+          We invest in the wider technology community: speaking to the next
+          generation of IT professionals, supporting local entrepreneurs, and
+          bringing executives, academics and practitioners together through
+          Lumko Seminars.
+        </p>
+        <a href={SEMINAR.url} class="link-arrow" rel="noopener">
+          <span>Visit Lumko Seminars</span>
+          <Icon name="ph:arrow-up-right-light" aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBlock />
+</BaseLayout>
+
+<style>
+  .intro__grid {
+    display: grid;
+    gap: 2.5rem 5rem;
+  }
+  .intro__grid h2 {
+    max-width: 14ch;
+  }
+  .intro__copy p {
+    color: var(--ink-muted);
+    max-width: 58ch;
+  }
+  .intro__copy p + p {
+    margin-top: 1.1rem;
+  }
+  .intro__copy .intro__lead {
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  @media (min-width: 1000px) {
+    .intro__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .principles {
+    background: var(--paper);
+  }
+  .principles__head h2 {
+    max-width: 18ch;
+  }
+  .principles__list {
+    list-style: none;
+    display: grid;
+    gap: 2.5rem 4rem;
+    margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  }
+  .principles__list li {
+    padding-top: 1.25rem;
+    border-top: 2px solid var(--brand-700);
+  }
+  .principles__list li:not(:first-child) {
+    border-top-color: var(--line-strong);
+  }
+  .principles__list h3 {
+    font-size: var(--text-h3);
+    margin-bottom: 0.6rem;
+  }
+  .principles__list p {
+    color: var(--ink-muted);
+    max-width: 48ch;
+  }
+  @media (min-width: 900px) {
+    .principles__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .principles__list li:first-child {
+      grid-column: 1 / -1;
+    }
+    .principles__list li:first-child h3 {
+      font-size: var(--text-h2);
+    }
+  }
+
+  .network {
+    padding-block: var(--section-y);
+    overflow: hidden;
+  }
+  .network__grid {
+    display: grid;
+    gap: 3rem;
+  }
+  .network__copy h2 {
+    margin: 1rem 0 1.5rem;
+    max-width: 14ch;
+  }
+  .network__copy p:not(.index-label) {
+    color: var(--text-muted);
+    max-width: 50ch;
+  }
+  .network__copy p + p {
+    margin-top: 1rem;
+  }
+  .network__copy .network__join {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: var(--text-sm);
+  }
+  @media (min-width: 1100px) {
+    .network__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr);
+      align-items: center;
+      gap: 4rem;
+    }
+  }
+
+  .relationship__head {
+    max-width: 52rem;
+    margin-bottom: clamp(3rem, 2rem + 3vw, 4.5rem);
+  }
+  .relationship__head h2 {
+    margin: 0 0 1.25rem;
+    max-width: 18ch;
+  }
+  .relationship__head p:not(.index-label) {
+    color: var(--ink-muted);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  .who {
+    border-top: 1px solid var(--line);
+  }
+  .who__grid {
+    display: grid;
+    gap: 3rem 5rem;
+  }
+  .who__title {
+    font-size: var(--text-h3);
+    max-width: 18ch;
+  }
+  .who__flow {
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h4);
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--ink-muted);
+    max-width: 34ch;
+  }
+  .who__flow span {
+    color: var(--ink-strong);
+  }
+  .who__countries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .who__countries span {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-xs);
+    font-size: var(--text-sm);
+    color: var(--ink);
+  }
+  .who__countries span:last-child {
+    border-style: dashed;
+    color: var(--ink-muted);
+  }
+  @media (min-width: 900px) {
+    .who__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  .people {
+    background: var(--paper);
+  }
+  .people__grid {
+    display: grid;
+    gap: 2.5rem 4.5rem;
+    align-items: center;
+  }
+  .people__photo :global(.frame__shell) {
+    background: var(--surface);
+  }
+  .people__photo :global(img) {
+    object-position: 50% 40%;
+    filter: saturate(0.85);
+  }
+  .people__copy h2 {
+    margin: 1rem 0 1.25rem;
+    max-width: 18ch;
+  }
+  .people__copy p:not(.index-label) {
+    color: var(--ink-muted);
+    max-width: 50ch;
+  }
+  .people__copy p + p {
+    margin-top: 1rem;
+  }
+  .people__copy .link-arrow {
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 1000px) {
+    .people__grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    }
+  }
+</style>

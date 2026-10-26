@@ -1,0 +1,166 @@
+---
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import lockupInverse from '@/assets/brand/lumko-lockup-inverse.png';
+import { SITE, CONTACT, FOOTER_NAV } from '@/consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" data-surface="invert">
+  <div class="container container--wide">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <a href="/" class="site-footer__logo" aria-label={`${SITE.fullName}, home`}>
+          <Image src={lockupInverse} alt={SITE.fullName} widths={[180, 360]} sizes="180px" />
+        </a>
+        <p class="site-footer__tag">{SITE.tagline}.</p>
+        <p class="site-footer__region">
+          Based in {CONTACT.locality}, {CONTACT.country}. Working across Southern
+          Africa, including Lesotho, Namibia and Botswana.
+        </p>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="Footer">
+        {FOOTER_NAV.map((col) => (
+          <div class="site-footer__col">
+            <h2>{col.heading}</h2>
+            <ul role="list">
+              {col.links.map((l) => (
+                <li>
+                  <a href={l.href} rel={l.external ? 'noopener' : undefined}>
+                    {l.label}
+                    {l.external && <Icon name="ph:arrow-up-right-light" aria-hidden="true" />}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <div class="site-footer__col">
+          <h2>Contact</h2>
+          <ul role="list">
+            <li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+            <li><a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phoneDisplay}</a></li>
+            <li>
+              <a href={CONTACT.whatsappUrl} rel="noopener" data-analytics="whatsapp_click">
+                WhatsApp
+              </a>
+            </li>
+            <li>
+              <a href={CONTACT.calendlyUrl} rel="noopener" data-analytics="calendly_click">
+                Book a call
+                <Icon name="ph:arrow-up-right-light" aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>&copy; {year} {SITE.fullName}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 5.5rem) 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .site-footer__top {
+    display: grid;
+    gap: 3rem 2rem;
+  }
+
+  .site-footer__logo {
+    display: inline-flex;
+    text-decoration: none;
+  }
+  .site-footer__logo :global(img) {
+    width: 180px;
+    height: auto;
+  }
+  .site-footer__tag {
+    margin-top: 1.5rem;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h3);
+    font-weight: 560;
+    letter-spacing: var(--tracking-tight);
+    color: #fff;
+  }
+  .site-footer__region {
+    margin-top: 0.6rem;
+    max-width: 40ch;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+
+  .site-footer__nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem 1.5rem;
+  }
+  .site-footer__col h2 {
+    font-family: var(--font-sans);
+    font-stretch: normal;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 1rem;
+  }
+  .site-footer__col ul {
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .site-footer__col a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .site-footer__col a :global(svg) {
+    width: 0.85em;
+    height: 0.85em;
+    opacity: 0.6;
+  }
+  .site-footer__col a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-bright);
+    text-underline-offset: 0.25em;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--label);
+    font-size: var(--text-xs);
+  }
+
+  @media (min-width: 640px) {
+    .site-footer__nav {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .site-footer__top {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+      gap: 4rem;
+    }
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+// Variable fonts: Archivo with weight + width axes (display), Geist weight
+// axis (body). Language subsets are unicode-range gated, so en-ZA users only
+// fetch the latin woff2.
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/geist/wght.css';
+import '@/styles/app.css';
+
+import Seo from '@/components/Seo.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { SITE } from '@/consts';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  image?: string;
+  imageAlt?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+  publishedTime?: string;
+  modifiedTime?: string;
+  /** Suppress the sticky header (e.g. focused funnel pages). */
+  bareHeader?: boolean;
+  mainClass?: string;
+}
+
+const {
+  bareHeader = false,
+  mainClass,
+  ...seo
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#150479" />
+    <meta name="format-detection" content="telephone=no" />
+    <script is:inline>document.documentElement.setAttribute('data-js', '');</script>
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <Seo {...seo} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div data-top-sentinel aria-hidden="true"></div>
+
+    {!bareHeader && <Header />}
+
+    <main id="main" class={mainClass}>
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      // One observer for every [data-reveal] element on the page. Elements
+      // reveal once and are then unobserved. Reduced motion is handled in CSS.
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        items.forEach((el) => io.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,112 @@
+---
+/**
+ * <Lifecycle> — Discover → Design → Build → Integrate → Support → Improve,
+ * as a ruled timeline with a return path from Improve back to Discover.
+ */
+import { LIFECYCLE } from '@/data/services';
+---
+
+<div class="cycle">
+  <ol class="cycle__list" role="list">
+    {LIFECYCLE.map((s, i) => (
+      <li class="cycle__step" data-reveal style={`--reveal-i:${i}`}>
+        <span class="cycle__node" aria-hidden="true"></span>
+        <h3 class="cycle__name">{s.name}</h3>
+        <p class="cycle__body">{s.body}</p>
+      </li>
+    ))}
+  </ol>
+  <p class="cycle__return">
+    <svg viewBox="0 0 24 12" aria-hidden="true" focusable="false">
+      <path d="M22 1v5H3m0 0 4-4M3 6l4 4" fill="none" stroke="currentColor" stroke-width="1.25" />
+    </svg>
+    Then back to discovery, as the organisation and its needs change.
+  </p>
+</div>
+
+<style>
+  .cycle__list {
+    position: relative;
+    list-style: none;
+    display: grid;
+  }
+  .cycle__list::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .cycle__step {
+    position: relative;
+    padding: 0 0 2rem 2.25rem;
+  }
+  .cycle__node {
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 11px;
+    height: 11px;
+    background: var(--surface);
+    border: 1.5px solid var(--brand-700);
+  }
+  .cycle__step:nth-child(5) .cycle__node,
+  .cycle__step:nth-child(6) .cycle__node {
+    background: var(--brand-700);
+  }
+  .cycle__name {
+    font-size: var(--text-h4);
+    margin-bottom: 0.35rem;
+  }
+  .cycle__body {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.55;
+    max-width: 34ch;
+  }
+
+  .cycle__return {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-left: 2.25rem;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .cycle__return svg {
+    width: 1.75rem;
+    height: auto;
+    flex-shrink: 0;
+    color: var(--accent-ink);
+  }
+
+  @media (min-width: 900px) {
+    .cycle__list {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 1.5rem;
+      padding-top: 2.25rem;
+    }
+    .cycle__list::before {
+      left: 0;
+      right: 0;
+      top: 5px;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+    }
+    .cycle__step {
+      padding: 0;
+    }
+    .cycle__node {
+      top: -2.25rem;
+    }
+    .cycle__return {
+      position: relative;
+      margin-top: 2.5rem;
+      padding: 1rem 0 0;
+      border-top: 1px dashed var(--line-strong);
+    }
+  }
+</style>

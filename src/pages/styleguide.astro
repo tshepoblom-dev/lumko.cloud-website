@@ -1,0 +1,237 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import Field from '@/components/forms/Field.astro';
+
+const swatches = [
+  ['--brand-900', 'brand 900'],
+  ['--brand-800', 'brand 800'],
+  ['--brand-700', 'brand 700 · primary'],
+  ['--brand-600', 'brand 600'],
+  ['--brand-500', 'brand 500'],
+  ['--brand-100', 'brand 100'],
+  ['--brand-050', 'brand 050'],
+  ['--accent', 'accent · glyph'],
+  ['--accent-ink', 'accent ink · AA'],
+  ['--accent-050', 'accent 050'],
+  ['--ink', 'ink · body'],
+  ['--ink-muted', 'ink muted'],
+  ['--ink-subtle', 'ink subtle'],
+  ['--line', 'line'],
+  ['--paper', 'paper'],
+];
+
+const type = [
+  ['--text-display', 'Display', 'Technology expertise for organisations with serious work to do.'],
+  ['--text-statement', 'Statement', 'One technology partner. Multiple areas of expertise.'],
+  ['--text-h1', 'Heading 1', 'The expertise a technology problem actually needs.'],
+  ['--text-h2', 'Heading 2', 'Five areas of expertise, one way of working.'],
+  ['--text-h3', 'Heading 3', 'Software & Systems'],
+  ['--text-lead', 'Lead', 'We bring together software, infrastructure, data and ICT expertise.'],
+  ['--text-base', 'Body', 'We stay involved after the first release, helping organisations maintain, improve and extend their technology as their needs change.'],
+  ['--text-sm', 'Small', 'Based in South Africa. Working across Southern Africa.'],
+];
+---
+
+<BaseLayout
+  title="Style guide"
+  description="Internal component and token reference."
+  noindex
+>
+  <section class="section">
+    <div class="container">
+      <h1>Style guide</h1>
+      <p class="lead">
+        Stage 2 foundations: tokens, typography, buttons, forms, and the shared
+        header, footer and CTA block. Not linked in navigation; noindexed.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--sunken section--tight">
+    <div class="container">
+      <h2>Colour</h2>
+      <ul class="sg-swatches" role="list">
+        {swatches.map(([varName, label]) => (
+          <li>
+            <span class="sg-swatch" style={`background:var(${varName})`}></span>
+            <code>{varName}</code>
+            <span>{label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <h2>Typography</h2>
+      <p class="sg-note">
+        Display / headings: Archivo (variable, width 92%). Body / UI: Inter.
+      </p>
+      <div class="sg-type stack">
+        {type.map(([varName, label, sample]) => (
+          <div class="sg-type__row">
+            <span class="sg-type__label"><code>{varName}</code> {label}</span>
+            <p
+              class="sg-type__sample"
+              style={`font-size:var(${varName});${
+                String(varName).includes('h') || String(varName).includes('display')
+                  ? 'font-family:var(--font-display);font-weight:600;line-height:1.15;letter-spacing:-0.014em'
+                  : ''
+              }`}
+            >
+              {sample}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sunken section--tight">
+    <div class="container">
+      <h2>Buttons</h2>
+      <div class="sg-row">
+        <Button>Start a Conversation</Button>
+        <Button variant="secondary">See Our Work</Button>
+        <Button variant="quiet" iconEnd="ph:arrow-right-light">Read the case study</Button>
+      </div>
+      <div class="sg-row">
+        <Button size="sm">Small</Button>
+        <Button size="md">Medium</Button>
+        <Button size="lg" iconEnd="ph:arrow-right-light">Large</Button>
+      </div>
+      <div class="sg-row sg-row--invert" data-surface="invert">
+        <Button>Start a Conversation</Button>
+        <Button variant="secondary">See Our Work</Button>
+        <Button variant="quiet" iconEnd="ph:arrow-right-light">On deep indigo</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      <h2>Form fields</h2>
+      <form class="sg-form stack" style="--stack-gap:1.25rem" novalidate>
+        <Field name="sg-name" label="Full name" required autocomplete="name" placeholder="Thandeka Mokoena" />
+        <Field
+          name="sg-email"
+          label="Work email"
+          type="email"
+          required
+          hint="We only use this to reply to your enquiry."
+          placeholder="you@company.co.za"
+        />
+        <Field
+          name="sg-industry"
+          label="Industry"
+          as="select"
+          placeholder="Select an industry"
+          options={[
+            { value: 'mining', label: 'Mining & industrial' },
+            { value: 'finance', label: 'Finance & financial services' },
+            { value: 'fleet', label: 'Fleet & logistics' },
+            { value: 'other', label: 'Something else' },
+          ]}
+        />
+        <Field
+          name="sg-improve"
+          label="What would you like to improve?"
+          as="textarea"
+          placeholder="Tell us what you are trying to solve."
+        />
+        <Field
+          name="sg-error"
+          label="Contact number"
+          error="Enter a valid phone number, including the area code."
+          value="12"
+        />
+        <Button type="submit">Request a call</Button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <h2>Breadcrumbs</h2>
+      <Breadcrumbs
+        items={[
+          { label: 'Our work', href: '/work' },
+          { label: 'Bursary management platform' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <CtaBlock />
+</BaseLayout>
+
+<style>
+  .sg-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .sg-swatches li {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 0.7rem;
+    align-items: center;
+    font-size: var(--text-xs);
+  }
+  .sg-swatch {
+    grid-row: 1 / 3;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+  }
+  .sg-swatches code {
+    color: var(--ink);
+  }
+  .sg-swatches span:last-child {
+    color: var(--ink-muted);
+  }
+
+  .sg-note {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    margin: 0.5rem 0 1.5rem;
+  }
+  .sg-type__row {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 0.85rem;
+    border-top: 1px solid var(--line);
+  }
+  .sg-type__label {
+    font-size: var(--text-xs);
+    color: var(--ink-subtle);
+  }
+  .sg-type__sample {
+    margin: 0;
+    max-width: 40ch;
+  }
+
+  .sg-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1.25rem;
+  }
+  .sg-row--invert {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .sg-form {
+    margin-top: 1.5rem;
+  }
+</style>

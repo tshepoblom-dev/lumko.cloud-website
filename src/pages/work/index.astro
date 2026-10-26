@@ -1,0 +1,207 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CaseStudyCard from '@/components/CaseStudyCard.astro';
+import MediaFrame from '@/components/MediaFrame.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import { SMALLER_WORK } from '@/data/smaller-work';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const [lead, ...rest] = work;
+const withImage = SMALLER_WORK.filter((p) => p.image);
+const textOnly = SMALLER_WORK.filter((p) => !p.image);
+---
+
+<BaseLayout
+  title="Our Work: Case Studies in Software, Data & Integrated Technology"
+  description="Case studies from Lumko: a bursary platform for a development trust, lifting-equipment inspection and certification, a lending operations platform, municipal field systems and fleet tracking, plus websites and online stores for growing businesses."
+>
+  <PageHero
+    label="Our work"
+    title="Systems that run real operations."
+    lead="Each project started with an organisational problem, not a feature list. These case studies describe what the problem was, what we built and what changed. We only state outcomes we can stand behind."
+    seed={13}
+  />
+
+  <div class="container container--wide">
+    <Breadcrumbs items={[{ label: 'Our work' }]} visible={false} />
+  </div>
+
+  <section class="section">
+    <div class="container container--wide">
+      {lead && (
+        <div data-reveal>
+          <CaseStudyCard entry={lead} variant="lead" headingLevel="h2" />
+        </div>
+      )}
+      <div class="grid">
+        {rest.map((w, i) => (
+          <div data-reveal style={`--reveal-i:${i % 3}`}>
+            <CaseStudyCard entry={w} headingLevel="h2" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Smaller projects: deliberately quieter than the case studies -->
+  <section id="smaller" class="section smaller" aria-labelledby="smaller-h">
+    <div class="container container--wide">
+      <header class="smaller__head" data-reveal>
+        <h2 id="smaller-h">Websites and tools for growing businesses.</h2>
+        <p>
+          Not every engagement is a large system. We also build websites,
+          online stores and booking tools for smaller organisations, with the
+          same care.
+        </p>
+      </header>
+      <ul class="smaller__grid" role="list">
+        {withImage.map((p, i) => (
+          <li class:list={['smaller__item', { 'smaller__item--wide': i === 0 }]} data-reveal style={`--reveal-i:${i % 3}`}>
+            <MediaFrame
+              src={p.image!}
+              alt={p.imageAlt ?? ''}
+              ratio="16 / 10"
+              widths={[480, 720, 960]}
+              sizes={i === 0 ? '(min-width: 900px) 58vw, 100vw' : '(min-width: 900px) 30vw, 100vw'}
+            />
+            <div class="smaller__text">
+              <p class="smaller__meta"><span>{p.kind}</span><span>{p.place}, {p.year}</span></p>
+              <h3>{p.client}</h3>
+              <p>{p.what}</p>
+            </div>
+          </li>
+        ))}
+        {textOnly.map((p) => (
+          <li class="smaller__item smaller__item--text" data-reveal style="--reveal-i:2">
+            <div class="smaller__text">
+              <p class="smaller__meta"><span>{p.kind}</span><span>{p.place}, {p.year}</span></p>
+              <h3>{p.client}</h3>
+              <p>{p.what}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBlock heading="Have a problem like these?" body="Large system or small website, tell us what you’re trying to solve. We’ll help you work out what it involves, and what a sensible first step looks like." />
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 3rem;
+    margin-top: clamp(3.5rem, 2rem + 4vw, 6rem);
+  }
+  @media (min-width: 760px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3.5rem 3rem;
+    }
+  }
+  /* Five studies, no empty cell: three across, then two sharing the row. */
+  @media (min-width: 1100px) {
+    .grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .grid > div {
+      grid-column: span 2;
+    }
+    .grid > div:nth-child(n + 4):nth-last-child(-n + 2) {
+      grid-column: span 3;
+    }
+  }
+
+  .smaller {
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+    scroll-margin-top: var(--header-h);
+  }
+  .smaller__head {
+    max-width: 44rem;
+    margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 3.5rem);
+  }
+  .smaller__head h2 {
+    font-size: var(--text-h3);
+    max-width: 22ch;
+  }
+  .smaller__head p {
+    margin-top: 0.9rem;
+    color: var(--ink-muted);
+    max-width: 56ch;
+  }
+  .smaller__grid {
+    list-style: none;
+    display: grid;
+    gap: 2.5rem 1.75rem;
+  }
+  .smaller__item :global(.frame__shell) {
+    background: var(--surface);
+  }
+  .smaller__item:hover :global(img) {
+    transform: scale(1.025);
+  }
+  .smaller__text {
+    margin-top: 1rem;
+  }
+  .smaller__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .smaller__text h3 {
+    margin-top: 0.4rem;
+    font-size: var(--text-h4);
+  }
+  .smaller__text p:not(.smaller__meta) {
+    margin-top: 0.35rem;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    max-width: 46ch;
+  }
+  .smaller__item--text {
+    align-self: end;
+    padding: 1.5rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-lg);
+  }
+  .smaller__item--text .smaller__text {
+    margin-top: 0;
+  }
+  @media (min-width: 760px) {
+    .smaller__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .smaller__item--wide {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1100px) {
+    .smaller__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .smaller__item {
+      grid-column: span 2;
+    }
+    .smaller__item--wide {
+      grid-column: span 4;
+      grid-row: span 2;
+    }
+    .smaller__item--wide .smaller__text h3 {
+      font-size: var(--text-h3);
+    }
+    /* five items, no empty cells: wide lead (4x2), two beside it, then a
+       framed tile and the text-only tile filling the last row */
+    .smaller__item--text {
+      grid-column: span 4;
+    }
+  }
+</style>

@@ -1,0 +1,284 @@
+---
+/**
+ * <SignalChain> — the integrated-technology schematic:
+ *   Device → Connectivity → Platform → Data → Decision
+ * A tablist switches the scenario (mining / agriculture / logistics). Without
+ * JS, every scenario renders in full, stacked, with its own heading.
+ */
+const STAGES = ['Device', 'Connectivity', 'Platform', 'Data', 'Decision'] as const;
+
+const SCENARIOS = [
+  {
+    id: 'mining',
+    name: 'Mining',
+    steps: [
+      'Equipment, sensors and inspection tablets',
+      'Site network, mobile data or offline sync',
+      'Inspection, asset and workforce platform',
+      'Compliance records and operational dashboards',
+      'Alerts, maintenance scheduling and sign-off',
+    ],
+  },
+  {
+    id: 'agriculture',
+    name: 'Agriculture',
+    steps: [
+      'Field sensors, devices and crew phones',
+      'Rural connectivity with offline-first sync',
+      'Farm operations platform',
+      'Yield, tally, cost and condition analytics',
+      'Planning, payments and timely intervention',
+    ],
+  },
+  {
+    id: 'logistics',
+    name: 'Logistics',
+    steps: [
+      'GPS tracking hardware in vehicles',
+      'Mobile network communications',
+      'Tracking and fleet management backend',
+      'Trip, route and usage reporting',
+      'Geofence alerts and remote vehicle commands',
+    ],
+  },
+] as const;
+---
+
+<div class="chain" data-chain>
+  <div class="chain__tabs" role="tablist" aria-label="Example scenario">
+    {SCENARIOS.map((s, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`chain-tab-${s.id}`}
+        aria-controls={`chain-panel-${s.id}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        tabindex={i === 0 ? 0 : -1}
+        data-tab
+      >
+        {s.name}
+      </button>
+    ))}
+  </div>
+
+  {SCENARIOS.map((s) => (
+    <div
+      class="chain__panel"
+      role="tabpanel"
+      id={`chain-panel-${s.id}`}
+      aria-labelledby={`chain-tab-${s.id}`}
+      data-panel
+    >
+      <h3 class="chain__panel-title">{s.name}</h3>
+      <ol class="chain__track" role="list">
+        {STAGES.map((stage, i) => (
+          <li class="chain__stage" style={`--i:${i}`}>
+            <span class="chain__node" aria-hidden="true"></span>
+            <span class="chain__name">{stage}</span>
+            <span class="chain__detail">{s.steps[i]}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  ))}
+</div>
+
+<style>
+  .chain__tabs {
+    display: none;
+    gap: 0;
+    margin-bottom: 2.75rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  :global([data-js]) .chain__tabs {
+    display: flex;
+  }
+  .chain__tabs button {
+    position: relative;
+    padding: 0.8rem 1.1rem;
+    margin-bottom: -1px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    border-bottom: 2px solid transparent;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .chain__tabs button:first-child {
+    padding-left: 0;
+  }
+  .chain__tabs button:hover {
+    color: var(--ink-strong);
+  }
+  .chain__tabs button[aria-selected='true'] {
+    color: var(--ink-strong);
+    border-bottom-color: var(--brand-700);
+  }
+
+  .chain__panel + .chain__panel {
+    margin-top: 3rem;
+  }
+  :global([data-js]) .chain__panel + .chain__panel {
+    margin-top: 0;
+  }
+  .chain__panel-title {
+    font-size: var(--text-h4);
+    margin-bottom: 1.5rem;
+  }
+  :global([data-js]) .chain__panel-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  /* Track: vertical on narrow screens */
+  .chain__track {
+    position: relative;
+    list-style: none;
+    display: grid;
+    gap: 0;
+  }
+  .chain__track::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .chain__stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 0.2rem;
+    padding: 0 0 1.75rem 1.25rem;
+  }
+  .chain__stage:last-child {
+    padding-bottom: 0;
+  }
+  .chain__node {
+    position: absolute;
+    left: 0;
+    top: 0.35rem;
+    width: 11px;
+    height: 11px;
+    background: var(--surface);
+    border: 1.5px solid var(--brand-700);
+  }
+  .chain__stage:last-child .chain__node {
+    background: var(--signal);
+    border-color: var(--signal);
+  }
+  .chain__name {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h4);
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+    color: var(--ink-strong);
+    line-height: 1.2;
+  }
+  .chain__detail {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.5;
+    max-width: 30ch;
+  }
+
+  /* Horizontal on wide screens, with a signal travelling along the line */
+  @media (min-width: 900px) {
+    .chain__track {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1.5rem;
+      padding-top: 2.25rem;
+    }
+    .chain__track::before {
+      left: 0;
+      right: 0;
+      top: 5px;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+    }
+    .chain__stage {
+      grid-template-columns: 1fr;
+      padding: 0;
+      row-gap: 0.35rem;
+    }
+    .chain__node {
+      top: calc(-2.25rem);
+    }
+  }
+
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .chain__track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 0;
+      width: 72px;
+      height: 5px;
+      background: linear-gradient(90deg, transparent, var(--signal));
+      animation: signal 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+  }
+  @keyframes signal {
+    0% {
+      transform: translateX(-72px);
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(calc(var(--track-w, 1100px) - 20px));
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-chain]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    const select = (idx: number, focus = false) => {
+      tabs.forEach((t, i) => {
+        const on = i === idx;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        panels[i].hidden = !on;
+      });
+      if (focus) tabs[idx].focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const last = tabs.length - 1;
+        let next: number | null = null;
+        if (e.key === 'ArrowRight') next = i === last ? 0 : i + 1;
+        if (e.key === 'ArrowLeft') next = i === 0 ? last : i - 1;
+        if (e.key === 'Home') next = 0;
+        if (e.key === 'End') next = last;
+        if (next !== null) {
+          e.preventDefault();
+          select(next, true);
+        }
+      });
+    });
+    select(0);
+
+    // Let the travelling signal span the real track width.
+    const setW = () =>
+      root.querySelectorAll<HTMLElement>('.chain__track').forEach((tr) => {
+        if (tr.offsetWidth) root.style.setProperty('--track-w', `${tr.offsetWidth}px`);
+      });
+    setW();
+    window.addEventListener('resize', setW, { passive: true });
+  });
+</script>

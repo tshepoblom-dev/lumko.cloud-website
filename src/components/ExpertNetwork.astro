@@ -1,0 +1,283 @@
+---
+/**
+ * <ExpertNetwork> — the resourcing diagram (About). Lumko sits at the centre of a
+ * mesh of disciplines; spokes light in sequence to suggest the right
+ * expertise being brought in. Labels are a real list (accessible, crisp
+ * text); on wide screens they are positioned on the diagram, on narrow
+ * screens they reflow into a grid beneath it.
+ */
+import { DISCIPLINES } from '@/data/services';
+
+const W = 1000;
+const H = 640;
+const cx = W / 2;
+const cy = H / 2;
+
+// Disciplines on a slightly irregular ellipse (hand-tuned jitter, stable).
+const jitter = [0.02, -0.04, 0.05, -0.02, 0.04, -0.05, 0.03, -0.03, 0.01];
+const nodes = DISCIPLINES.map((label, i) => {
+  const a = (-90 + (360 / DISCIPLINES.length) * i) * (Math.PI / 180);
+  const rx = W * (0.33 + jitter[i] * 0.6);
+  const ry = H * (0.39 - jitter[(i + 3) % jitter.length] * 0.6);
+  const x = cx + Math.cos(a) * rx;
+  const y = cy + Math.sin(a) * ry;
+  const side = Math.abs(x - cx) < W * 0.08 ? (y < cy ? 'top' : 'bottom') : x < cx ? 'left' : 'right';
+  return { label, x, y, side };
+});
+
+// Secondary mesh nodes between the ring and centre, for the faceted texture.
+function mulberry32(a: number) {
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(11);
+const minor: { x: number; y: number }[] = [];
+let guard = 0;
+while (minor.length < 16 && guard++ < 4000) {
+  const a = rand() * Math.PI * 2;
+  const d = 0.32 + rand() * 0.42;
+  const x = cx + Math.cos(a) * W * 0.33 * d;
+  const y = cy + Math.sin(a) * H * 0.39 * d;
+  const all = [...minor, ...nodes, { x: cx, y: cy }];
+  if (all.every((p) => Math.hypot(p.x - x, p.y - y) > 70)) minor.push({ x, y });
+}
+const meshPts = [...nodes.map((n) => ({ x: n.x, y: n.y })), ...minor];
+const meshEdges: [number, number][] = [];
+const seen = new Set<string>();
+meshPts.forEach((p, i) => {
+  meshPts
+    .map((q, j) => ({ j, d: Math.hypot(p.x - q.x, p.y - q.y) }))
+    .filter((o) => o.j !== i)
+    .sort((a, b) => a.d - b.d)
+    .slice(0, 3)
+    .forEach(({ j }) => {
+      const k = i < j ? `${i}-${j}` : `${j}-${i}`;
+      if (!seen.has(k)) {
+        seen.add(k);
+        meshEdges.push([i, j]);
+      }
+    });
+});
+
+const f = (n: number) => Math.round(n * 10) / 10;
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
+const n = DISCIPLINES.length;
+---
+
+<div class="xnet" style={`--n:${n}`}>
+  <div class="xnet__stage">
+  <svg class="xnet__svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+    <g class="xnet__mesh">
+      {meshEdges.map(([a, b]) => (
+        <line x1={f(meshPts[a].x)} y1={f(meshPts[a].y)} x2={f(meshPts[b].x)} y2={f(meshPts[b].y)} />
+      ))}
+      {minor.map((p) => <circle cx={f(p.x)} cy={f(p.y)} r="2.5" />)}
+    </g>
+    <g class="xnet__spokes">
+      {nodes.map((nd, i) => (
+        <line x1={cx} y1={cy} x2={f(nd.x)} y2={f(nd.y)} style={`--i:${i}`} />
+      ))}
+    </g>
+    <g class="xnet__nodes">
+      {nodes.map((nd, i) => (
+        <circle cx={f(nd.x)} cy={f(nd.y)} r="6" style={`--i:${i}`} />
+      ))}
+    </g>
+    <circle class="xnet__core-ring" cx={cx} cy={cy} r="58" />
+    <circle class="xnet__core" cx={cx} cy={cy} r="10" />
+  </svg>
+
+  <p class="xnet__core-label" aria-hidden="true">Lumko</p>
+  </div>
+
+  <ul class="xnet__labels" role="list" aria-label="Areas of expertise in the Lumko network">
+    {nodes.map((nd, i) => (
+      <li
+        class={`is-${nd.side}`}
+        style={`--x:${pct(nd.x, W)};--y:${pct(nd.y, H)};--i:${i}`}
+      >
+        {nd.label}
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .xnet {
+    position: relative;
+    --c-line: rgba(255, 255, 255, 0.13);
+    --c-node: rgba(255, 255, 255, 0.55);
+    --cycle: calc(var(--n) * 0.7s);
+  }
+  .xnet__stage {
+    position: relative;
+  }
+  .xnet__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .xnet__mesh line {
+    stroke: var(--c-line);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .xnet__mesh circle {
+    fill: rgba(255, 255, 255, 0.28);
+  }
+  .xnet__spokes line {
+    stroke: rgba(255, 255, 255, 0.24);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .xnet__nodes circle {
+    fill: var(--brand-900);
+    stroke: var(--c-node);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .xnet__core-ring {
+    fill: none;
+    stroke: rgba(92, 210, 255, 0.35);
+    stroke-width: 1;
+    stroke-dasharray: 3 5;
+    vector-effect: non-scaling-stroke;
+  }
+  .xnet__core {
+    fill: var(--signal);
+  }
+  .xnet__core-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, calc(-50% + 2.4rem));
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+    color: #fff;
+    margin: 0;
+  }
+
+  /* Narrow: labels as a grid under the diagram */
+  .xnet__labels {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .xnet__labels li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text);
+  }
+  .xnet__labels li::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 0.6rem;
+    vertical-align: 0.12em;
+    border: 1.5px solid var(--accent-bright);
+    border-radius: 50%;
+  }
+
+  /* Wide: labels placed on their nodes */
+  @media (min-width: 760px) {
+    .xnet__labels {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      border: 0;
+      display: block;
+      pointer-events: none;
+    }
+    .xnet__labels li {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      padding: 0;
+      border: 0;
+      white-space: nowrap;
+      font-size: var(--text-sm);
+      color: rgba(255, 255, 255, 0.82);
+    }
+    .xnet__labels li::before {
+      display: none;
+    }
+    .xnet__labels .is-right {
+      transform: translate(1.1rem, -50%);
+    }
+    .xnet__labels .is-left {
+      transform: translate(calc(-100% - 1.1rem), -50%);
+    }
+    .xnet__labels .is-top {
+      transform: translate(-50%, calc(-100% - 0.9rem));
+    }
+    .xnet__labels .is-bottom {
+      transform: translate(-50%, 0.9rem);
+    }
+  }
+
+  /* Sequential spoke highlight: the right expertise brought in, in turn. */
+  @media (prefers-reduced-motion: no-preference) {
+    .xnet__spokes line {
+      animation: spoke var(--cycle) linear infinite;
+      animation-delay: calc(var(--i) * 0.7s);
+    }
+    .xnet__nodes circle {
+      animation: node var(--cycle) linear infinite;
+      animation-delay: calc(var(--i) * 0.7s);
+    }
+    .xnet__labels li {
+      animation: label var(--cycle) linear infinite;
+      animation-delay: calc(var(--i) * 0.7s);
+    }
+  }
+  @keyframes spoke {
+    0%,
+    16%,
+    100% {
+      stroke: rgba(255, 255, 255, 0.24);
+    }
+    4%,
+    10% {
+      stroke: var(--signal);
+    }
+  }
+  @keyframes node {
+    0%,
+    16%,
+    100% {
+      fill: var(--brand-900);
+      stroke: var(--c-node);
+    }
+    4%,
+    10% {
+      fill: var(--signal);
+      stroke: var(--signal);
+    }
+  }
+  @keyframes label {
+    0%,
+    16%,
+    100% {
+      color: rgba(255, 255, 255, 0.82);
+    }
+    4%,
+    10% {
+      color: #fff;
+    }
+  }
+</style>

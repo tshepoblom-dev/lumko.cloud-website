@@ -1,0 +1,71 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { CONTACT, SEMINAR } from '@/consts';
+---
+
+<BaseLayout
+  title="Thank you"
+  description="Your message has been sent to Lumko."
+  noindex
+>
+  <section class="ty">
+    <div class="container container--wide">
+      <p class="index-label" data-ty-label>Message sent</p>
+      <h1 class="ty__title" data-ty-title>Thank you. We’ve received your message.</h1>
+      <p class="lead" data-ty-network hidden>
+        We’ll read about your experience and get in touch when there is work
+        that fits. Thank you for your interest in working with Lumko.
+      </p>
+      <p class="lead" data-ty-project>
+        Someone from Lumko will be in touch using the contact method you chose.
+        If it’s urgent, call us on <a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phoneDisplay}</a>.
+      </p>
+      <ul class="ty__links" role="list">
+        <li><a href="/work" class="link-arrow"><span>Read our case studies</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a></li>
+        <li><a href="/what-we-do" class="link-arrow"><span>See what we do</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a></li>
+        <li><a href={SEMINAR.url} rel="noopener" class="link-arrow"><span>Visit Lumko Seminars</span><Icon name="ph:arrow-up-right-light" aria-hidden="true" /></a></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  try {
+    sessionStorage.removeItem('lumko-contact-draft');
+  } catch {
+    /* ignore */
+  }
+  // Network applications land here with ?type=network.
+  if (new URLSearchParams(location.search).get('type') === 'network') {
+    const label = document.querySelector('[data-ty-label]');
+    const title = document.querySelector('[data-ty-title]');
+    if (label) label.textContent = 'Application sent';
+    if (title) title.textContent = 'Thank you. We’ve received your application.';
+    document.querySelector<HTMLElement>('[data-ty-network]')?.removeAttribute('hidden');
+    document.querySelector<HTMLElement>('[data-ty-project]')?.setAttribute('hidden', '');
+  }
+</script>
+
+<style>
+  .ty {
+    padding-block: clamp(4rem, 2rem + 8vw, 9rem);
+  }
+  .ty__title {
+    margin: 1.25rem 0 1.25rem;
+    max-width: 16ch;
+    font-size: var(--text-h1);
+    font-weight: 620;
+    line-height: 1.04;
+    letter-spacing: var(--tracking-display);
+  }
+  .ty__links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.25rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+</style>

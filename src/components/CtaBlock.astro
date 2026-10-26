@@ -1,0 +1,91 @@
+---
+import Button from '@/components/Button.astro';
+import { CONTACT, PRIMARY_CTA } from '@/consts';
+
+interface Props {
+  heading?: string;
+  body?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+}
+
+const {
+  heading = 'Have a technology problem worth solving?',
+  body = 'Let’s talk about what you’re trying to achieve. We’ll help you work out what the problem really involves and who needs to be in the room to solve it.',
+  primaryLabel = PRIMARY_CTA.label,
+  primaryHref = PRIMARY_CTA.href,
+} = Astro.props;
+---
+
+<section class="cta-block" data-surface="invert" aria-labelledby="cta-heading">
+  <div class="container container--wide cta-block__inner">
+    <h2 id="cta-heading" class="statement" data-reveal>{heading}</h2>
+    <div class="cta-block__side" data-reveal style="--reveal-i:1">
+      <p>{body}</p>
+      <Button href={primaryHref} size="lg" iconEnd="ph:arrow-right-light" data-analytics="primary_cta_click">
+        {primaryLabel}
+      </Button>
+      <dl class="cta-block__direct">
+        <div>
+          <dt>Email</dt>
+          <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
+        </div>
+        <div>
+          <dt>Phone</dt>
+          <dd><a href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phoneDisplay}</a></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-block {
+    padding-block: var(--section-y);
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-block__inner {
+    display: grid;
+    gap: 2.5rem;
+    align-items: end;
+  }
+  .cta-block h2 {
+    max-width: 14ch;
+  }
+  .cta-block__side p {
+    color: var(--text-muted);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    max-width: 40ch;
+    margin-bottom: 1.75rem;
+  }
+  .cta-block__direct {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+    margin-top: 2.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .cta-block__direct dt {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 0.25rem;
+  }
+  .cta-block__direct a {
+    color: #fff;
+    font-size: var(--text-sm);
+    text-decoration-color: var(--link-underline);
+    text-underline-offset: 0.25em;
+  }
+  @media (min-width: 1000px) {
+    .cta-block__inner {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 5rem;
+    }
+  }
+</style>

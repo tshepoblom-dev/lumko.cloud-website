@@ -1,0 +1,66 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NetworkMesh from '@/components/NetworkMesh.astro';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you were looking for isn’t here."
+  noindex
+>
+  <section class="nf">
+    <div class="nf__mesh"><NetworkMesh seed={404} count={24} highlights={1} animate={false} /></div>
+    <div class="container container--wide nf__inner">
+      <p class="index-label">404</p>
+      <h1 class="nf__title">This connection doesn’t lead anywhere.</h1>
+      <p class="lead">
+        The page may have moved when we rebuilt the site. These are the places
+        most people are looking for:
+      </p>
+      <ul class="nf__links" role="list">
+        <li><a href="/" class="link-arrow"><span>Home</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a></li>
+        <li><a href="/what-we-do" class="link-arrow"><span>What we do</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a></li>
+        <li><a href="/work" class="link-arrow"><span>Our work</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a></li>
+        <li><a href="/contact" class="link-arrow"><span>Talk to Lumko</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(4rem, 2rem + 8vw, 9rem);
+  }
+  .nf__inner {
+    position: relative;
+  }
+  .nf__title {
+    margin: 1.25rem 0 1.25rem;
+    max-width: 14ch;
+    font-size: var(--text-h1);
+    font-weight: 620;
+    line-height: 1.04;
+    letter-spacing: var(--tracking-display);
+  }
+  .nf__links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.25rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .nf__mesh {
+    position: absolute;
+    right: -10%;
+    top: 50%;
+    width: min(70vw, 560px);
+    transform: translateY(-50%);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+</style>

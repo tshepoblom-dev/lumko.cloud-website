@@ -1,0 +1,187 @@
+---
+/**
+ * <Field> — one labelled form control. Label above, hint + error below,
+ * wired with for / aria-describedby / aria-invalid. Renders <input>,
+ * <textarea>, or <select> (pass `options`).
+ */
+interface Option {
+  value: string;
+  label: string;
+}
+type InputType =
+  | 'text'
+  | 'email'
+  | 'tel'
+  | 'url'
+  | 'number'
+  | 'password'
+  | 'search'
+  | 'date';
+
+interface Props {
+  name: string;
+  label: string;
+  as?: 'input' | 'textarea' | 'select';
+  type?: InputType;
+  required?: boolean;
+  hint?: string;
+  error?: string;
+  placeholder?: string;
+  autocomplete?: string;
+  value?: string;
+  rows?: number;
+  options?: Option[];
+  /** Optional explicit id; defaults to the name. */
+  id?: string;
+}
+
+const {
+  name,
+  label,
+  as = 'input',
+  type = 'text',
+  required = false,
+  hint,
+  error,
+  placeholder,
+  autocomplete,
+  value,
+  rows = 5,
+  options = [],
+  id = name,
+}: Props = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+const errId = error ? `${id}-error` : undefined;
+const describedBy = [hintId, errId].filter(Boolean).join(' ') || undefined;
+---
+
+<div class:list={['field', { 'field--invalid': !!error }]}>
+  <label for={id}>
+    {label}
+    {required && <span class="field__req" aria-hidden="true">*</span>}
+    {required && <span class="visually-hidden">(required)</span>}
+  </label>
+
+  {hint && <p class="field__hint" id={hintId}>{hint}</p>}
+
+  {as === 'textarea' && (
+    <textarea
+      id={id}
+      name={name}
+      rows={rows}
+      required={required}
+      placeholder={placeholder}
+      aria-describedby={describedBy}
+      aria-invalid={error ? 'true' : undefined}
+      set:text={value}
+    />
+  )}
+
+  {as === 'select' && (
+    <select
+      id={id}
+      name={name}
+      required={required}
+      aria-describedby={describedBy}
+      aria-invalid={error ? 'true' : undefined}
+    >
+      <option value="" disabled selected={!value}>
+        {placeholder ?? 'Please choose'}
+      </option>
+      {options.map((o: Option) => (
+        <option value={o.value} selected={value === o.value}>{o.label}</option>
+      ))}
+    </select>
+  )}
+
+  {as === 'input' && (
+    <input
+      id={id}
+      name={name}
+      type={type}
+      required={required}
+      placeholder={placeholder}
+      autocomplete={autocomplete}
+      value={value}
+      aria-describedby={describedBy}
+      aria-invalid={error ? 'true' : undefined}
+    />
+  )}
+
+  {error && (
+    <p class="field__error" id={errId}>{error}</p>
+  )}
+</div>
+
+<style>
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .field label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-strong);
+  }
+  .field__req {
+    color: var(--danger);
+    margin-inline-start: 0.15rem;
+  }
+  .field__hint {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    margin: 0;
+  }
+  .field :is(input, textarea, select) {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    font-size: var(--text-base);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    appearance: none;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 6.5rem;
+    line-height: 1.5;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23565b70' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.25rem;
+  }
+  .field :is(input, textarea, select)::placeholder {
+    color: var(--ink-subtle);
+  }
+  .field :is(input, textarea, select):focus-visible {
+    outline: none;
+    border-color: var(--focus-ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-ring) 22%, transparent);
+  }
+  .field--invalid :is(input, textarea, select) {
+    border-color: var(--danger);
+  }
+  .field--invalid :is(input, textarea, select):focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 20%, transparent);
+  }
+  .field__error {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--danger);
+    margin: 0;
+  }
+
+  :global([data-surface='invert']) .field :is(input, textarea, select) {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #fff;
+  }
+  :global([data-surface='invert']) .field :is(input, textarea, select)::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+</style>

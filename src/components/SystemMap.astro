@@ -1,0 +1,130 @@
+---
+/**
+ * <SystemMap> — a drawn schematic of a case study's system:
+ *   who uses it  →  what the platform does  →  what it produces
+ * Used where we have no suitable screenshot, and alongside one where we do.
+ */
+interface Props {
+  users: string[];
+  modules: string[];
+  outputs: string[];
+  /** Name shown on the central column. */
+  name?: string;
+  compact?: boolean;
+}
+const { users, modules, outputs, name = 'The platform', compact = false } = Astro.props;
+---
+
+<figure class:list={['smap', { 'smap--compact': compact }]}>
+  <div class="smap__col">
+    <p class="smap__head">Who uses it</p>
+    <ul role="list">{users.map((u) => <li>{u}</li>)}</ul>
+  </div>
+  <span class="smap__link" aria-hidden="true"></span>
+  <div class="smap__col smap__col--core">
+    <p class="smap__head">{name}</p>
+    <ul role="list">{modules.map((m) => <li>{m}</li>)}</ul>
+  </div>
+  <span class="smap__link" aria-hidden="true"></span>
+  <div class="smap__col">
+    <p class="smap__head">What it produces</p>
+    <ul role="list">{outputs.map((o) => <li>{o}</li>)}</ul>
+  </div>
+  <figcaption class="visually-hidden">
+    System overview: who uses the platform, what it does, and what it produces.
+  </figcaption>
+</figure>
+
+<style>
+  .smap {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+  .smap__col {
+    padding: 1.25rem 1.25rem 1.35rem;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+  }
+  .smap__col--core {
+    border-color: var(--brand-700);
+    background: var(--brand-050);
+  }
+  .smap__head {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 0.85rem;
+  }
+  .smap__col--core .smap__head {
+    color: var(--brand-700);
+  }
+  .smap ul {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .smap li {
+    position: relative;
+    padding-left: 1rem;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .smap li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 5px;
+    height: 5px;
+    border: 1.25px solid var(--brand-700);
+    border-radius: 50%;
+  }
+  .smap__col--core li::before {
+    background: var(--signal);
+    border-color: var(--signal);
+  }
+
+  /* connector: vertical on narrow, horizontal on wide */
+  .smap__link {
+    position: relative;
+    height: 1.75rem;
+    justify-self: center;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .smap__link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid var(--ink-subtle);
+    border-bottom: 1px solid var(--ink-subtle);
+    transform: translate(-50%, -1px) rotate(45deg);
+  }
+
+  @media (min-width: 900px) {
+    .smap:not(.smap--compact) {
+      grid-template-columns: minmax(0, 1fr) 2.25rem minmax(0, 1.2fr) 2.25rem minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .smap:not(.smap--compact) .smap__link {
+      width: 100%;
+      height: 1px;
+      align-self: center;
+    }
+    .smap:not(.smap--compact) .smap__link::after {
+      left: auto;
+      right: 0;
+      bottom: auto;
+      top: 50%;
+      transform: translate(-1px, -50%) rotate(-45deg);
+    }
+  }
+</style>

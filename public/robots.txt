@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /thank-you
+Disallow: /styleguide
+
+Sitemap: https://lumko.cloud/sitemap-index.xml

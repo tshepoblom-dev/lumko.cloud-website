@@ -1,0 +1,92 @@
+---
+/**
+ * <SeminarNote> — a small, deliberate gateway to Lumko Seminars. Quiet by
+ * design: it must not compete with the technology story. The "next seminar"
+ * line disappears automatically once its date has passed (build time).
+ */
+import { Icon } from 'astro-icon/components';
+import { SEMINAR } from '@/consts';
+
+const today = new Date().toISOString().slice(0, 10);
+const showNext = SEMINAR.next.date >= today;
+---
+
+<section class="seminar" aria-labelledby="seminar-heading">
+  <div class="container container--wide seminar__inner">
+    <div class="seminar__copy" data-reveal>
+      <p class="index-label">{SEMINAR.name}</p>
+      <h2 id="seminar-heading">The conversation continues.</h2>
+      <p>
+        Lumko Seminars brings together executives, professionals, academics and
+        industry experts to explore how technology, data and innovation are
+        shaping organisations and communities.
+      </p>
+    </div>
+    <div class="seminar__side" data-reveal style="--reveal-i:1">
+      {showNext && (
+        <p class="seminar__next">
+          <span class="seminar__next-label">Next seminar</span>
+          <span class="seminar__next-title">{SEMINAR.next.title}</span>
+          <span class="seminar__next-meta">
+            <time datetime={SEMINAR.next.date}>{SEMINAR.next.dateDisplay}</time> · {SEMINAR.next.city} and online
+          </span>
+        </p>
+      )}
+      <a href={SEMINAR.url} class="link-arrow" rel="noopener">
+        <span>Visit Lumko Seminars</span>
+        <Icon name="ph:arrow-up-right-light" aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .seminar {
+    padding-block: clamp(3rem, 2rem + 3vw, 4.5rem);
+    border-top: 1px solid var(--line);
+  }
+  .seminar__inner {
+    display: grid;
+    gap: 2rem;
+  }
+  .seminar h2 {
+    font-size: var(--text-h3);
+    margin: 0.9rem 0 0.75rem;
+  }
+  .seminar__copy p:last-child {
+    color: var(--ink-muted);
+    max-width: 58ch;
+  }
+  .seminar__next {
+    display: grid;
+    gap: 0.2rem;
+    padding: 1rem 0 1rem 1.1rem;
+    margin-bottom: 1.25rem;
+    border-left: 2px solid var(--signal);
+  }
+  .seminar__next-label {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .seminar__next-title {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h4);
+    font-weight: 600;
+    color: var(--ink-strong);
+  }
+  .seminar__next-meta {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  @media (min-width: 900px) {
+    .seminar__inner {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 5rem;
+      align-items: end;
+    }
+  }
+</style>

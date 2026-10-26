@@ -1,0 +1,230 @@
+---
+/**
+ * <CaseStudyCard> — a case study preview.
+ *  - lead: wide, text + image (or system map), documented facts.
+ *  - compact: rule-topped text block.
+ */
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import SystemMap from '@/components/SystemMap.astro';
+import MediaFrame from '@/components/MediaFrame.astro';
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+  variant?: 'lead' | 'compact';
+  headingLevel?: 'h2' | 'h3';
+}
+const { entry, variant = 'compact', headingLevel = 'h3' } = Astro.props;
+const d = entry.data;
+const href = `/work/${entry.id}`;
+const H = headingLevel;
+const statusLabel =
+  d.status === 'product' ? 'Lumko product' : d.status === 'in-progress' ? 'In progress' : null;
+---
+
+{variant === 'lead' ? (
+  <article class="cs cs--lead">
+    <div class="cs__text">
+      <p class="cs__meta">
+        <span>{d.sector}</span>
+        <span>{d.location}</span>
+      </p>
+      <H class="cs__title">
+        <a href={href}>{d.headline}</a>
+      </H>
+      <p class="cs__client">{d.client}</p>
+      <p class="cs__summary">{d.summary}</p>
+      {d.facts.length > 0 && (
+        <dl class="cs__facts">
+          {d.facts.map((fct) => (
+            <div>
+              <dt>{fct.label}</dt>
+              <dd>{fct.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <a href={href} class="link-arrow" aria-label={`Read the case study: ${d.title}`}>
+        <span>Read the case study</span>
+        <Icon name="ph:arrow-right-light" aria-hidden="true" />
+      </a>
+    </div>
+    <div class="cs__visual">
+      {d.image ? (
+        <MediaFrame
+          src={d.image}
+          alt={d.imageAlt ?? ''}
+          caption={d.imageCaption}
+          sizes="(min-width: 1000px) 56vw, 100vw"
+        />
+      ) : (
+        <SystemMap {...d.system} compact />
+      )}
+    </div>
+  </article>
+) : (
+  <article class="cs cs--compact">
+    <p class="cs__meta">
+      <span>{d.sector}</span>
+      {statusLabel && <span>{statusLabel}</span>}
+    </p>
+    <H class="cs__title">
+      <a href={href} class="cs__stretch">{d.headline}</a>
+    </H>
+    <p class="cs__client">{d.client}</p>
+    <p class="cs__summary">{d.summary}</p>
+    <span class="cs__more" aria-hidden="true">
+      Read the case study
+      <Icon name="ph:arrow-right-light" />
+    </span>
+  </article>
+)}
+
+<style>
+  .cs__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 1rem;
+  }
+  .cs__meta span + span::before {
+    content: '/';
+    margin: 0 0.6rem;
+    opacity: 0.5;
+  }
+  .cs__title {
+    font-weight: 600;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .cs__title a {
+    color: var(--heading);
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size var(--dur-slow) var(--ease-out), color var(--dur) var(--ease);
+  }
+  .cs__title a:hover,
+  .cs--compact:hover .cs__title a {
+    color: var(--brand-700);
+    background-size: 100% 1px;
+  }
+  .cs__client {
+    margin-top: 0.6rem;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .cs__summary {
+    margin-top: 0.75rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    max-width: 54ch;
+  }
+
+  /* Lead */
+  .cs--lead {
+    display: grid;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .cs--lead .cs__title {
+    font-size: clamp(1.6rem, 1.15rem + 1.6vw, 2.45rem);
+  }
+  .cs__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 1.25rem 2.25rem;
+    margin: 1.75rem 0 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .cs__facts dt {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .cs__facts dd {
+    margin-top: 0.2rem;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-strong);
+  }
+  .cs--lead > .cs__text > .link-arrow {
+    margin-top: 1.5rem;
+  }
+  .cs__facts + .link-arrow {
+    margin-top: 0 !important;
+  }
+
+  /* Compact: whole block is the link target */
+  .cs--compact {
+    position: relative;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-strong);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .cs--compact::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--brand-700);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .cs--compact:hover::before {
+    transform: scaleX(1);
+  }
+  .cs--compact .cs__title {
+    font-size: var(--text-h3);
+  }
+  .cs__stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .cs__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1.25rem;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--brand-700);
+  }
+  .cs__more :global(svg) {
+    width: 1em;
+    height: 1em;
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .cs--compact:hover .cs__more :global(svg) {
+    transform: translateX(3px);
+  }
+
+  @media (min-width: 1000px) {
+    .cs--lead {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 4.5rem;
+    }
+  }
+</style>

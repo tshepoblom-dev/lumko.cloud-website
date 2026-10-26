@@ -1,0 +1,171 @@
+/* ============================================================================
+   LUMKO — DESIGN TOKENS
+   Indigo + cerulean, sampled from the logo:
+     wordmark indigo  #150479   ->  --brand-700  (brand moments, buttons, dark bands)
+     glyph cerulean   #08BAF4   ->  --signal     (nodes, markers, data pulse only)
+   Headings are set in ink, not indigo, so the brand colour keeps its meaning.
+   Committed single light theme. Dark *sections* are handled by
+   [data-surface="invert"] (see the block at the end).
+   ============================================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Brand ramp (indigo) ------------------------------------------------ */
+  --brand-900: #0b0340;
+  --brand-800: #10064f;
+  --brand-700: #150479; /* logo wordmark — primary brand colour */
+  --brand-600: #241a86;
+  --brand-500: #3a2fa0;
+  --brand-200: #c9c5ec;
+  --brand-100: #e5e3f5;
+  --brand-050: #f3f2fb;
+
+  /* ---- Signal (cerulean) ------------------------------------------------- */
+  /* --accent is the logo glyph blue. It is BRIGHT: it fails text contrast on
+     white, so it is used only for nodes, small marks and fills on dark.
+     Interactive text and focus rings use --accent-ink (AA on white). */
+  --accent: #08baf4;
+  --accent-ink: #0a6aa6; /* ~4.9:1 on white — safe for accent text/rings */
+  --accent-bright: #5cd2ff; /* lightened — for use on dark surfaces */
+  --accent-100: #c5ecfc;
+  --accent-050: #e7f7fe;
+  --signal: var(--accent);
+
+  /* ---- Neutrals (cool grey, faint blue cast) --------------------------- */
+  --ink: #1b1d2b; /* body text — ~15:1 on white */
+  --ink-strong: #0e1020; /* headings, max-emphasis text */
+  --ink-muted: #545a6e; /* secondary text — ~6.8:1 on white (AA) */
+  --ink-subtle: #686e7e; /* meta / captions — ~5:1 on white (AA) */
+  --line: #e3e5ec; /* hairlines */
+  --line-strong: #c9cdd9; /* dividers that need to read */
+
+  --surface: #ffffff; /* page ground */
+  --paper: #f4f5f8; /* quiet alternate ground */
+  --surface-sunken: var(--paper);
+  --surface-raised: #ffffff;
+  --grid-line: rgba(21, 4, 121, 0.055); /* blueprint grid on paper */
+
+  /* ---- Semantic ------------------------------------------------------------ */
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --heading: var(--ink-strong);
+  --link: var(--brand-700);
+  --link-underline: color-mix(in srgb, var(--brand-700) 30%, transparent);
+  --link-hover-underline: var(--brand-700);
+  --border: var(--line);
+  --bg: var(--surface);
+  --focus-ring: var(--accent-ink);
+  --label: var(--ink-subtle);
+
+  --ok: #1a7f4b;
+  --ok-050: #e8f6ee;
+  --warn: #9a5b00;
+  --warn-050: #fdf2e2;
+  --danger: #b3261e;
+  --danger-050: #fbeceb;
+
+  /* ---- Radius (architectural, near-square) ----------------------------- */
+  --radius-xs: 2px;
+  --radius-sm: 3px; /* buttons, inputs */
+  --radius-md: 4px; /* media frames */
+  --radius-lg: 6px; /* large panels */
+  --radius-round: 999px; /* dots only */
+
+  /* ---- Shadow (indigo-tinted, elevation only) ------------------------- */
+  --shadow-xs: 0 1px 2px rgba(21, 4, 121, 0.06);
+  --shadow-sm: 0 1px 3px rgba(21, 4, 121, 0.09), 0 1px 2px rgba(21, 4, 121, 0.05);
+  --shadow-md: 0 10px 28px -8px rgba(21, 4, 121, 0.14);
+  --shadow-lg: 0 24px 48px -16px rgba(21, 4, 121, 0.2);
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-heavy: cubic-bezier(0.32, 0.72, 0, 1); /* weighted settle: reveals, menus */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 420ms;
+
+  /* ---- Typography ------------------------------------------------------- */
+  --font-display: 'Archivo Variable', 'Archivo', 'Segoe UI', system-ui,
+    -apple-system, sans-serif;
+  --font-sans: 'Geist Variable', 'Geist', system-ui, -apple-system,
+    'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', 'Segoe UI Mono',
+    'Roboto Mono', Menlo, Consolas, monospace;
+
+  /* Display width: slightly condensed reads architectural without shouting. */
+  --display-stretch: 92%;
+
+  --text-2xs: 0.72rem;
+  --text-xs: clamp(0.78rem, 0.76rem + 0.08vw, 0.82rem);
+  --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.925rem);
+  --text-base: clamp(1rem, 0.97rem + 0.14vw, 1.0625rem);
+  --text-lead: clamp(1.125rem, 1.04rem + 0.38vw, 1.32rem);
+  --text-h4: clamp(1.12rem, 1.06rem + 0.3vw, 1.3rem);
+  --text-h3: clamp(1.35rem, 1.22rem + 0.6vw, 1.75rem);
+  --text-h2: clamp(1.85rem, 1.45rem + 1.7vw, 2.9rem);
+  --text-h1: clamp(2.3rem, 1.6rem + 2.9vw, 4.1rem);
+  --text-statement: clamp(2.2rem, 1.3rem + 3.9vw, 4.9rem);
+  --text-display: clamp(2.55rem, 1.45rem + 4.7vw, 5.6rem);
+
+  --leading-display: 1.02;
+  --leading-tight: 1.1;
+  --leading-snug: 1.26;
+  --leading-body: 1.65;
+  --tracking-display: -0.026em;
+  --tracking-tight: -0.018em;
+  --tracking-normal: 0;
+  --tracking-label: 0.1em;
+
+  /* ---- Spacing scale (4px base) ------------------------------------- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 6.5rem;
+
+  /* ---- Layout --------------------------------------------------------- */
+  --container: 1200px;
+  --container-wide: 1360px;
+  --container-narrow: 760px;
+  --gutter: clamp(1.25rem, 0.8rem + 2.4vw, 2.5rem);
+  --section-y: clamp(4rem, 2.6rem + 6vw, 8.5rem);
+  --measure: 64ch;
+
+  --header-h: 72px;
+  --z-header: 100;
+  --z-menu: 200;
+  --z-skiplink: 300;
+}
+
+/* ----------------------------------------------------------------------------
+   Inverted surface: deep-indigo sections (Lumko Model, final CTA, footer).
+   Set data-surface="invert" on the section wrapper.
+   ------------------------------------------------------------------------- */
+[data-surface='invert'] {
+  color-scheme: dark;
+  --text: rgba(255, 255, 255, 0.9);
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --label: rgba(255, 255, 255, 0.62);
+  --heading: #ffffff;
+  --link: #ffffff;
+  --link-underline: rgba(255, 255, 255, 0.4);
+  --link-hover-underline: #ffffff;
+  --border: rgba(255, 255, 255, 0.14);
+  --line: rgba(255, 255, 255, 0.14);
+  --line-strong: rgba(255, 255, 255, 0.26);
+  --bg: var(--brand-900);
+  --surface: var(--brand-900);
+  --surface-sunken: var(--brand-800);
+  --surface-raised: rgba(255, 255, 255, 0.05);
+  --focus-ring: var(--accent-bright);
+  --accent-ink: var(--accent-bright);
+  --ink-strong: #ffffff;
+  background: var(--brand-900);
+  color: var(--text);
+}

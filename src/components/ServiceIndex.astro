@@ -1,0 +1,119 @@
+---
+/**
+ * <ServiceIndex> — the five capability areas as an editorial index: name,
+ * one line, capabilities. Each row links into /what-we-do.
+ */
+import { Icon } from 'astro-icon/components';
+import { SERVICES } from '@/data/services';
+
+interface Props {
+  headingLevel?: 'h3' | 'h2';
+}
+const { headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+
+<ol class="sindex" role="list">
+  {SERVICES.map((s, i) => (
+    <li data-reveal style={`--reveal-i:${i}`}>
+      <a href={`/what-we-do#${s.id}`} class="sindex__row">
+        <H class="sindex__name">{s.name}</H>
+        <span class="sindex__summary">{s.summary}</span>
+        <span class="sindex__caps">{s.capabilities.slice(0, 4).join(', ')}</span>
+        <Icon name="ph:arrow-right-light" class="sindex__arrow" aria-hidden="true" />
+      </a>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .sindex {
+    list-style: none;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .sindex__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.5rem;
+    grid-template-areas:
+      'name arrow'
+      'summary summary'
+      'caps caps';
+    column-gap: 0.75rem;
+    row-gap: 0.45rem;
+    padding: 1.75rem 0;
+    border-top: 1px solid var(--line-strong);
+    color: inherit;
+    text-decoration: none;
+  }
+  .sindex__row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--brand-700);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .sindex__name {
+    grid-area: name;
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: 1.15;
+    transition: transform var(--dur-slow) var(--ease-out), color var(--dur) var(--ease);
+  }
+  .sindex__summary {
+    grid-area: summary;
+    color: var(--ink-muted);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    max-width: 52ch;
+  }
+  .sindex__caps {
+    grid-area: caps;
+    font-size: var(--text-xs);
+    color: var(--ink-subtle);
+    letter-spacing: 0.01em;
+  }
+  .sindex__arrow {
+    grid-area: arrow;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.45rem;
+    color: var(--brand-700);
+    opacity: 0.35;
+    transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur) var(--ease);
+  }
+
+  .sindex__row:hover::before,
+  .sindex__row:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .sindex__row:hover .sindex__name {
+    color: var(--brand-700);
+    transform: translateX(6px);
+  }
+  .sindex__row:hover .sindex__arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  @media (min-width: 900px) {
+    .sindex__row {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr) 2rem;
+      grid-template-areas:
+        'name summary arrow'
+        'name caps arrow';
+      column-gap: 2rem;
+      row-gap: 0.6rem;
+      padding: 2.1rem 0;
+      align-items: start;
+    }
+    .sindex__name {
+      font-size: clamp(1.6rem, 1.1rem + 1.1vw, 2.3rem);
+    }
+  }
+</style>
