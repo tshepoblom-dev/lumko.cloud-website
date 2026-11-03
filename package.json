@@ -7,7 +7,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test:diagnostics": "node --experimental-strip-types --no-warnings --test tests/diagnostics/engine.test.ts",
+    "test:e2e": "node scripts/diagnostics-e2e.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.6",

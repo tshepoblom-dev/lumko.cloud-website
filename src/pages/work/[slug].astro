@@ -7,7 +7,7 @@ import SystemMap from '@/components/SystemMap.astro';
 import MediaFrame from '@/components/MediaFrame.astro';
 import CaseStudyCard from '@/components/CaseStudyCard.astro';
 import CtaBlock from '@/components/CtaBlock.astro';
-import { SITE, SECONDARY_CTA } from '@/consts';
+import { SITE, WORK_CTA } from '@/consts';
 
 export async function getStaticPaths() {
   const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
@@ -130,7 +130,7 @@ const schema = [
     <div class="container container--wide">
       <div class="cs-next__head">
         <p id="next-h" class="index-label">Next case study</p>
-        <a href="/work" class="link-arrow"><span>{SECONDARY_CTA.label}</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
+        <a href="/work" class="link-arrow"><span>{WORK_CTA.label}</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
       </div>
       <CaseStudyCard entry={next} headingLevel="h2" />
     </div>

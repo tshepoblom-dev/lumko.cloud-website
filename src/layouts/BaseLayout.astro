@@ -64,6 +64,14 @@ const {
     <Footer />
 
     <script>
+      // Privacy-safe analytics hooks: data-analytics clicks and first-touch
+      // UTM/referrer for diagnostic leads. No tracking provider is loaded.
+      import { bindClickTracking, captureAttribution } from '@/lib/analytics';
+      bindClickTracking();
+      captureAttribution();
+    </script>
+
+    <script>
       // One observer for every [data-reveal] element on the page. Elements
       // reveal once and are then unobserved. Reduced motion is handled in CSS.
       const items = document.querySelectorAll<HTMLElement>('[data-reveal]');

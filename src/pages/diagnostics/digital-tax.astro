@@ -1,0 +1,11 @@
+---
+import DiagnosticPage from '@/components/diagnostics/DiagnosticPage.astro';
+---
+
+<DiagnosticPage id="digital-tax" />
+
+<script>
+  import { mount } from '@/lib/diagnostics/client';
+  import { digitalTaxDiagnostic } from '@/data/diagnostics/digital-tax';
+  mount(digitalTaxDiagnostic);
+</script>

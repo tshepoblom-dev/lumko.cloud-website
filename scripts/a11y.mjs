@@ -15,6 +15,7 @@ const axeSource = await fs.readFile(require.resolve('axe-core/axe.min.js'), 'utf
 const BASE = process.env.BASE_URL || 'http://localhost:4321';
 const ROUTES = process.env.ROUTES?.split(',') || [
   '/', '/what-we-do', '/industries', '/work', '/about', '/contact', '/privacy', '/thank-you', '/404',
+  '/diagnostics', '/diagnostics/process', '/diagnostics/data', '/diagnostics/digital-tax', '/diagnostics/ai',
   '/work/jtg-bursary-platform', '/work/gregbev-inspection-platform', '/work/ttmk-lending-platform',
   '/work/municipal-service-delivery', '/work/ifalcontrace', '/work/shearflow',
 ];

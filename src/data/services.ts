@@ -13,6 +13,8 @@ export type Service = {
   capabilities: string[];
   /** What an engagement in this area typically looks like. */
   typically: string;
+  /** How a diagnostic finding typically leads into this area. */
+  fromDiagnosis: { text: string; diagnostics: ('process' | 'data' | 'digital-tax' | 'ai')[] };
 };
 
 export const SERVICES: Service[] = [
@@ -36,6 +38,10 @@ export const SERVICES: Service[] = [
     ],
     typically:
       'A multi-portal platform replacing paper, spreadsheets and email with one governed workflow.',
+    fromDiagnosis: {
+      text: 'Repeated capture, approvals nobody can track and staff bridging systems by hand usually lead here: a workflow, an integration or a validated digital form.',
+      diagnostics: ['process', 'digital-tax'],
+    },
   },
   {
     id: 'infrastructure-ict',
@@ -57,6 +63,10 @@ export const SERVICES: Service[] = [
     ],
     typically:
       'Moving a business-critical system onto secure, monitored hosting with a clear support arrangement.',
+    fromDiagnosis: {
+      text: 'Access that outlives employment, untested backups and AI on personal accounts are infrastructure and ICT problems before they are policy problems.',
+      diagnostics: ['data', 'ai'],
+    },
   },
   {
     id: 'data-intelligence',
@@ -77,6 +87,10 @@ export const SERVICES: Service[] = [
     ],
     typically:
       'A finance and programme dashboard drawn from live operational data rather than monthly spreadsheets.',
+    fromDiagnosis: {
+      text: 'When management sees information days late, or reports are assembled by hand, the fix is usually one structured data store with reporting on top.',
+      diagnostics: ['process', 'ai'],
+    },
   },
   {
     id: 'integrated-technology',
@@ -98,6 +112,10 @@ export const SERVICES: Service[] = [
     ],
     typically:
       'GPS trackers feeding a platform that shows live position, trip history and lets operators act remotely.',
+    fromDiagnosis: {
+      text: 'Paper field reports, inspections and equipment checks often point to field capture, devices and connectivity rather than office software.',
+      diagnostics: ['process'],
+    },
   },
   {
     id: 'technology-consulting',
@@ -119,6 +137,10 @@ export const SERVICES: Service[] = [
     ],
     typically:
       'A technology assessment and phased roadmap a board or executive committee can approve.',
+    fromDiagnosis: {
+      text: 'A diagnostic names the priority. A short consulting engagement confirms it with the people involved and turns it into a plan you can approve.',
+      diagnostics: ['process', 'data', 'digital-tax', 'ai'],
+    },
   },
 ];
 

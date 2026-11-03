@@ -12,20 +12,32 @@ import CaseStudyCard from '@/components/CaseStudyCard.astro';
 import Lifecycle from '@/components/Lifecycle.astro';
 import SeminarNote from '@/components/SeminarNote.astro';
 import CtaBlock from '@/components/CtaBlock.astro';
+import DiagnosticCards from '@/components/diagnostics/DiagnosticCards.astro';
+import ManualSpectrum from '@/components/diagnostics/ManualSpectrum.astro';
 import skyline from '@/assets/photos/johannesburg-skyline.jpg';
 import fieldEngineer from '@/assets/photos/field-engineer-tablet.jpg';
 import workingSession from '@/assets/photos/team-working-session.jpg';
-import { PRIMARY_CTA, SECONDARY_CTA, NETWORK_CTA } from '@/consts';
+import { DIAGNOSTICS_CTA, WORK_CTA, CONTACT_CTA, NETWORK_CTA } from '@/consts';
 import { STRATEGIC_INDUSTRIES, OTHER_INDUSTRIES } from '@/data/industries';
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const [lead, ...rest] = work.filter((w) => w.data.featured);
 const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
+
+/** Where operational weakness tends to hide. Kept short on purpose. */
+const HIDING = [
+  { icon: 'ph:files-light', name: 'Paper and manual workflows', body: 'Forms, registers and signatures that still carry the work.' },
+  { icon: 'ph:printer-light', name: 'Digital paper', body: 'PDFs, email, Excel and WhatsApp recreating a paper process on screens.' },
+  { icon: 'ph:arrows-left-right-light', name: 'Fragmented systems', body: 'Good systems that do not connect, bridged by people retyping data.' },
+  { icon: 'ph:database-light', name: 'Information that is hard to find or govern', body: 'Records spread across inboxes, drives and devices, with unclear access.' },
+  { icon: 'ph:receipt-light', name: 'Changing tax and reporting requirements', body: 'Invoicing and transaction data that may struggle as reporting becomes more digital.' },
+  { icon: 'ph:sparkle-light', name: 'Unmanaged AI adoption', body: 'AI already in daily use, before anyone has decided how it should be governed.' },
+];
 ---
 
 <BaseLayout
-  title="Technology Consulting & Business Technology Partner in South Africa"
-  description="Lumko brings together software, infrastructure, data and integrated-technology expertise to help organisations across Southern Africa solve complex technology problems. Based in Bloemfontein."
+  title="Business Technology Diagnostics & Technology Partner in South Africa"
+  description="Find the manual work, data exposure and system gaps hiding inside your operations, then fix them. Lumko diagnoses and builds software, infrastructure, data and integrated technology for organisations across Southern Africa."
   canonicalPath="/"
 >
   <!-- Hero: the city at dusk, with the Lumko mesh drawn into the sky -->
@@ -46,32 +58,78 @@ const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
       <NetworkMesh seed={7} count={26} width={720} height={420} highlights={4} />
     </div>
     <div class="container container--wide hero__inner">
-      <p class="index-label">Business technology partners</p>
+      <p class="index-label">Business technology diagnostics</p>
       <h1 class="display hero__title">
-        Technology expertise for organisations with serious work to do.
+        Find the problems hiding inside your operations.
       </h1>
       <p class="lead hero__lead">
-        We bring software, infrastructure, data and ICT expertise together to
-        build systems that work in the real world.
+        Paper, spreadsheets, disconnected systems, inaccessible information and
+        unmanaged AI can remain hidden even inside organisations with
+        established technology. We help you find them, decide what matters
+        first, and build or connect what solves them.
       </p>
       <div class="hero__actions">
-        <Button href={PRIMARY_CTA.href} size="lg" iconEnd="ph:arrow-right-light" data-analytics="primary_cta_click">
-          {PRIMARY_CTA.label}
+        <Button href={DIAGNOSTICS_CTA.href} size="lg" iconEnd="ph:arrow-right-light" data-analytics="hero_diagnostics_click">
+          {DIAGNOSTICS_CTA.label}
         </Button>
-        <a href={SECONDARY_CTA.href} class="link-arrow">
-          <span>{SECONDARY_CTA.label}</span>
+        <a href={WORK_CTA.href} class="link-arrow">
+          <span>{WORK_CTA.label}</span>
           <Icon name="ph:arrow-right-light" aria-hidden="true" />
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Credibility ledger (dense) -->
+  <!-- Relevance: where operational weakness hides -->
+  <section class="section section--tight hiding" aria-labelledby="hiding-heading">
+    <div class="container container--wide">
+      <header class="hiding__head" data-reveal>
+        <h2 id="hiding-heading">Operational weakness rarely sits where you expect it.</h2>
+        <p>
+          A form captured three times. An approval nobody can track. A report
+          that takes two days to compile. These problems hide in ordinary work.
+        </p>
+      </header>
+      <ul class="hiding__grid" role="list">
+        {HIDING.map((x, i) => (
+          <li data-reveal style={`--reveal-i:${i}`}>
+            <Icon name={x.icon} class="hiding__icon" aria-hidden="true" />
+            <h3>{x.name}</h3>
+            <p>{x.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Diagnostics: four specialised entry points -->
+  <section class="section diagnostics" aria-labelledby="diagnostics-heading">
+    <div class="container container--wide">
+      <header class="diagnostics__head" data-reveal>
+        <div>
+          <p class="index-label">Diagnostics</p>
+          <h2 id="diagnostics-heading" class="statement">Start with the problem, not the product.</h2>
+        </div>
+        <p>
+          Each diagnostic examines one part of your operating environment and
+          shows what deserves attention before you commit to a technology
+          project. You see a useful result on screen, based only on your answers.
+        </p>
+      </header>
+      <DiagnosticCards />
+      <a href={DIAGNOSTICS_CTA.href} class="link-arrow diagnostics__all">
+        <span>How the diagnostics work</span>
+        <Icon name="ph:arrow-right-light" aria-hidden="true" />
+      </a>
+    </div>
+  </section>
+
+  <!-- Credibility ledger (dense): proof stays high on the page -->
   <section class="section ledger" aria-labelledby="ledger-heading">
     <div class="container container--wide ledger__inner">
       <div class="ledger__intro" data-reveal>
-        <h2 id="ledger-heading">Work that runs real operations.</h2>
-        <p>Based in Bloemfontein, working across Southern Africa.</p>
+        <h2 id="ledger-heading">We diagnose operational problems because we build systems that solve them.</h2>
+        <p>Work that runs real operations. Based in Bloemfontein, working across Southern Africa.</p>
       </div>
       <ul class="ledger__list" role="list">
         {work.map((w, i) => (
@@ -88,12 +146,23 @@ const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
     </div>
   </section>
 
-  <!-- What we do: the problem framed as the header, then the index -->
+  <!-- Three kinds of manual organisation -->
+  <section class="section spectrum-section" aria-labelledby="spectrum-heading">
+    <div class="container container--wide">
+      <ManualSpectrum />
+    </div>
+  </section>
+
+  <!-- What we do: from diagnosis to implementation -->
   <section class="section services" aria-labelledby="services-heading">
     <div class="container container--wide">
       <header class="stack-head" data-reveal>
-        <h2 id="services-heading" class="statement">Most technology problems don’t arrive in one category.</h2>
-        <p>So we work across five, as a defined project or an ongoing partnership.</p>
+        <h2 id="services-heading" class="statement">From diagnosis to implementation.</h2>
+        <p>
+          A diagnostic should not end with a score. We investigate the
+          priority, design the intervention and implement it across five
+          disciplines, as a defined project or an ongoing partnership.
+        </p>
       </header>
       <ServiceIndex />
     </div>
@@ -179,8 +248,8 @@ const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
     <div class="container container--wide">
       <header class="work__head" data-reveal>
         <h2 id="work-heading">Systems that organisations depend on.</h2>
-        <a href={SECONDARY_CTA.href} class="link-arrow">
-          <span>{SECONDARY_CTA.label}</span>
+        <a href={WORK_CTA.href} class="link-arrow">
+          <span>{WORK_CTA.label}</span>
           <Icon name="ph:arrow-right-light" aria-hidden="true" />
         </a>
       </header>
@@ -241,7 +310,15 @@ const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
 
   <SeminarNote />
 
-  <CtaBlock />
+  <CtaBlock
+    heading="Find where to start."
+    body="Choose a diagnostic and identify a practical first priority before committing to a technology project."
+    primaryLabel="Find where to start"
+    primaryHref={DIAGNOSTICS_CTA.href}
+    secondaryLabel={`Already know what you need? ${CONTACT_CTA.label}.`}
+    secondaryHref={CONTACT_CTA.href}
+    analytics="final_diagnostics_click"
+  />
 </BaseLayout>
 
 <style>
@@ -339,6 +416,102 @@ const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
     }
   }
 
+  /* ---- Where weakness hides ---- */
+  .hiding {
+    border-bottom: 1px solid var(--line);
+  }
+  .hiding__head {
+    display: grid;
+    gap: 1rem 4rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .hiding__head h2 {
+    max-width: 20ch;
+  }
+  .hiding__head p {
+    color: var(--ink-muted);
+    max-width: 52ch;
+  }
+  .hiding__grid {
+    list-style: none;
+    display: grid;
+    border-top: 1px solid var(--line-strong);
+  }
+  .hiding__grid li {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    gap: 0.25rem 0.9rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hiding__icon {
+    grid-row: span 2;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--brand-700);
+  }
+  .hiding__grid h3 {
+    font-family: var(--font-sans);
+    font-stretch: normal;
+    font-size: var(--text-base);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .hiding__grid p {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    max-width: 44ch;
+  }
+  @media (min-width: 760px) {
+    .hiding__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2.5rem;
+    }
+  }
+  @media (min-width: 1100px) {
+    .hiding__head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: end;
+    }
+    .hiding__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* ---- Diagnostics ---- */
+  .diagnostics {
+    background: var(--paper);
+  }
+  .diagnostics__head {
+    display: grid;
+    gap: 1.25rem 4rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .diagnostics__head h2 {
+    margin-top: 1rem;
+    max-width: 14ch;
+  }
+  .diagnostics__head > p {
+    color: var(--ink-muted);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    max-width: 48ch;
+  }
+  .diagnostics__all {
+    margin-top: 2rem;
+  }
+  @media (min-width: 1100px) {
+    .diagnostics__head {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: end;
+    }
+  }
+
+  /* ---- Three kinds of manual organisation ---- */
+  .spectrum-section {
+    border-top: 1px solid var(--line);
+  }
+
   /* ---- Ledger ---- */
   .ledger {
     background: var(--paper);
@@ -348,7 +521,7 @@ const [mining, finance, agri] = STRATEGIC_INDUSTRIES;
     gap: 2.5rem;
   }
   .ledger__intro h2 {
-    max-width: 14ch;
+    max-width: 18ch;
   }
   .ledger__intro p {
     margin-top: 1rem;

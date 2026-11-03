@@ -1,0 +1,172 @@
+---
+/**
+ * <DiagnosticCards> — the four diagnostics as separate entry points.
+ * Each card states the hidden issue, who should take it, the time and
+ * what the respondent receives. Used on the homepage and /diagnostics.
+ */
+import { Icon } from 'astro-icon/components';
+import { DIAGNOSTICS } from '@/data/diagnostics';
+
+interface Props {
+  headingLevel?: 'h2' | 'h3';
+}
+const { headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+
+<ul class="dxc" role="list">
+  {DIAGNOSTICS.map((d, i) => (
+    <li class:list={['dxc__card', { 'dxc__card--lead': d.flagship }]} data-reveal style={`--reveal-i:${i}`}>
+      <div class="dxc__top">
+        <Icon name={d.icon} class="dxc__icon" aria-hidden="true" />
+        <span class="dxc__name">{d.name}</span>
+      </div>
+      <H class="dxc__hook">
+        <a href={d.href} class="dxc__link" data-analytics="diagnostic_card_click" data-analytics-diagnostic={d.id}>{d.hook}</a>
+      </H>
+      <p class="dxc__sub">{d.sub}</p>
+      <dl class="dxc__meta">
+        <div><dt>For</dt><dd>{d.who}</dd></div>
+        <div><dt>Time</dt><dd>{d.time}</dd></div>
+        <div><dt>You receive</dt><dd>{d.receive}</dd></div>
+      </dl>
+      <span class="dxc__cta" aria-hidden="true">
+        <span>{d.cta}</span>
+        <Icon name="ph:arrow-right-light" />
+      </span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .dxc {
+    list-style: none;
+    display: grid;
+    gap: 1rem;
+  }
+  .dxc__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.4rem, 1rem + 1.2vw, 2rem);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur-slow) var(--ease-heavy), transform var(--dur-slow) var(--ease-heavy);
+  }
+  .dxc__card:hover {
+    border-color: var(--brand-200);
+    box-shadow: 0 24px 40px -30px rgba(21, 4, 121, 0.35);
+    transform: translateY(-2px);
+  }
+  .dxc__card:focus-within {
+    border-color: var(--focus-ring);
+  }
+  .dxc__card--lead {
+    background: var(--brand-050);
+    border-color: var(--brand-100);
+  }
+  .dxc__top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .dxc__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--brand-700);
+  }
+  .dxc__name {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .dxc__hook {
+    font-size: var(--text-h4);
+    line-height: 1.25;
+    max-width: 30ch;
+  }
+  .dxc__link {
+    color: var(--ink-strong);
+    text-decoration: none;
+  }
+  /* whole card is the click target; the link text stays the accessible name */
+  .dxc__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .dxc__link:focus-visible {
+    outline: none;
+  }
+  .dxc__card:has(.dxc__link:focus-visible) {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  .dxc__sub {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    max-width: 52ch;
+  }
+  .dxc__meta {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.25rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line);
+    font-size: var(--text-xs);
+  }
+  .dxc__meta div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 0.75rem;
+  }
+  .dxc__meta dt {
+    font-weight: 600;
+    color: var(--ink-strong);
+  }
+  @media (min-width: 800px) and (max-width: 999px) {
+    .dxc__meta div {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+  }
+  .dxc__meta dd {
+    color: var(--ink-muted);
+  }
+  .dxc__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--brand-700);
+  }
+  .dxc__cta :global(svg) {
+    width: 1em;
+    height: 1em;
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .dxc__card:hover .dxc__cta :global(svg) {
+    transform: translateX(3px);
+  }
+  @media (min-width: 800px) {
+    .dxc {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1100px) {
+    .dxc {
+      gap: 1.25rem;
+    }
+    .dxc__card {
+      padding: 2rem 2.25rem;
+    }
+  }
+</style>

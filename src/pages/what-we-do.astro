@@ -5,7 +5,8 @@ import PageHero from '@/components/PageHero.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import CtaBlock from '@/components/CtaBlock.astro';
 import { SERVICES } from '@/data/services';
-import { SITE, PRIMARY_CTA } from '@/consts';
+import { metaFor } from '@/data/diagnostics';
+import { SITE, CONTACT_CTA } from '@/consts';
 
 const ENGAGEMENTS = [
   {
@@ -69,6 +70,15 @@ const schema = SERVICES.map((s) => ({
             <span>A typical engagement</span>
             {s.typically}
           </p>
+          <p class="svc__from">
+            <span>From diagnosis</span>
+            {s.fromDiagnosis.text}{' '}
+            {s.fromDiagnosis.diagnostics.map((d, k) => (
+              <>
+                <a href={metaFor(d).href}>{metaFor(d).name}</a>{k < s.fromDiagnosis.diagnostics.length - 1 ? ', ' : '.'}
+              </>
+            ))}
+          </p>
         </div>
         <div class="svc__caps" data-reveal style="--reveal-i:2">
           <h3>Capabilities</h3>
@@ -94,7 +104,7 @@ const schema = SERVICES.map((s) => ({
       </ol>
       <p class="engage__note" data-reveal>
         Not sure which you need? That is a normal place to start.
-        <a href="/contact" class="link-arrow"><span>{PRIMARY_CTA.label}</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
+        <a href="/contact" class="link-arrow"><span>{CONTACT_CTA.label}</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
       </p>
     </div>
   </section>
@@ -159,6 +169,14 @@ const schema = SERVICES.map((s) => ({
     font-size: var(--text-sm);
     color: var(--ink);
   }
+  .svc__body .svc__from {
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--brand-200);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .svc__from span,
   .svc__typically span {
     display: block;
     font-size: var(--text-2xs);

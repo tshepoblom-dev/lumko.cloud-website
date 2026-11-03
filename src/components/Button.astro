@@ -21,6 +21,8 @@ interface Props {
   'aria-label'?: string;
   id?: string;
   'data-analytics'?: string;
+  /** Any other data-* hook (e.g. data-dx-start for the diagnostics). */
+  [key: `data-${string}`]: string | boolean | undefined;
 }
 
 const {

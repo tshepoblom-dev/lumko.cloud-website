@@ -69,13 +69,19 @@ export const PRIMARY_NAV: NavItem[] = [
   { label: 'What We Do', href: '/what-we-do' },
   { label: 'Industries', href: '/industries' },
   { label: 'Our Work', href: '/work' },
+  { label: 'Diagnostics', href: '/diagnostics' },
   { label: 'About', href: '/about' },
   { label: 'Seminars', href: SEMINAR.url, external: true },
 ];
 
-/** One label per intent, used everywhere: contact, and the work index. */
-export const PRIMARY_CTA = { label: 'Talk to Lumko', href: '/contact' } as const;
-export const SECONDARY_CTA = { label: 'See our work', href: '/work' } as const;
+/**
+ * One constant per intent. Cold traffic is invited to assess first; contact
+ * stays available in the footer and on high-intent pages (case studies,
+ * services, diagnostic results).
+ */
+export const DIAGNOSTICS_CTA = { label: 'Assess your organisation', href: '/diagnostics' } as const;
+export const CONTACT_CTA = { label: 'Talk to Lumko', href: '/contact' } as const;
+export const WORK_CTA = { label: 'See our work', href: '/work' } as const;
 /** For ICT professionals applying to work with Lumko (opens the contact form in network mode). */
 export const NETWORK_CTA = { label: 'Join the Lumko network', href: '/contact?type=network#form' } as const;
 
@@ -86,6 +92,7 @@ export const FOOTER_NAV: { heading: string; links: NavItem[] }[] = [
       { label: 'What We Do', href: '/what-we-do' },
       { label: 'Industries', href: '/industries' },
       { label: 'Our Work', href: '/work' },
+      { label: 'Diagnostics', href: '/diagnostics' },
       { label: 'About', href: '/about' },
       { label: 'Talk to Lumko', href: '/contact' },
     ],

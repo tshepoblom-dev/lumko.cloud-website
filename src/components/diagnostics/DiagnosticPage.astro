@@ -1,0 +1,138 @@
+---
+/**
+ * <DiagnosticPage> — an indexable landing page for one diagnostic plus the
+ * assessment shell. The page's own <script> mounts the controller with its
+ * config. Results are rendered client-side on the same URL, so private
+ * result states never get a URL of their own.
+ */
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import Button from '@/components/Button.astro';
+import NetworkMesh from '@/components/NetworkMesh.astro';
+import AssessmentShell from './AssessmentShell.astro';
+import { CONFIGS, metaFor } from '@/data/diagnostics';
+import { CLAIMS } from '@/data/claims';
+import { CONTACT_CTA, SITE } from '@/consts';
+import type { DiagnosticId } from '@/lib/diagnostics/types';
+import '@/styles/diagnostics.css';
+
+interface Props {
+  id: DiagnosticId;
+}
+const { id } = Astro.props;
+const meta = metaFor(id);
+const config = CONFIGS[id];
+const claims = meta.claims.map((c) => CLAIMS[c]).filter(Boolean);
+const site = Astro.site ?? new URL(SITE.origin);
+
+const schema = [
+  {
+    '@type': 'WebPage',
+    '@id': new URL(meta.href, site).href + '#webpage',
+    url: new URL(meta.href, site).href,
+    name: meta.name,
+    description: meta.seo.description,
+    inLanguage: 'en-ZA',
+    isPartOf: { '@id': `${site.origin}/#website` },
+    publisher: { '@id': `${site.origin}/#organization` },
+    about: { '@type': 'Thing', name: meta.name },
+    potentialAction: { '@type': 'AssessAction', name: meta.cta, target: new URL(meta.href, site).href },
+  },
+];
+---
+
+<BaseLayout title={meta.seo.title} description={meta.seo.description} canonicalPath={meta.href} schema={schema}>
+  <section class="dxl-hero">
+    <div class="dxl-hero__mesh" aria-hidden="true">
+      <NetworkMesh seed={id.length * 7} count={20} highlights={3} animate={false} />
+    </div>
+    <div class="container container--wide dxl-hero__inner">
+      <Breadcrumbs items={[{ label: 'Diagnostics', href: '/diagnostics' }, { label: meta.name }]} />
+      <p class="index-label dxl-hero__label">{meta.name}</p>
+      <h1 class="dxl-hero__title">{meta.hook}</h1>
+      <div data-dx-landing>
+        <p class="lead dxl-hero__lead">{meta.sub}</p>
+        <dl class="dxl-facts">
+          <div><dt><Icon name="ph:clock-light" aria-hidden="true" /> Time</dt><dd>About {meta.time}. Questions adapt to your answers, and you can go back at any point.</dd></div>
+          <div><dt><Icon name="ph:user-light" aria-hidden="true" /> Useful for</dt><dd>{meta.who}</dd></div>
+          <div><dt><Icon name="ph:file-text-light" aria-hidden="true" /> You receive</dt><dd>{meta.receive}</dd></div>
+        </dl>
+        <div class="dxl-hero__actions">
+          <Button type="button" size="lg" iconEnd="ph:arrow-right-light" data-dx-start>
+            <span data-dx-start-label="Start the diagnostic">Start the diagnostic</span>
+          </Button>
+          <p class="dxl-hero__resume" data-dx-resume-hint hidden>You have answers saved in this browser tab.</p>
+        </div>
+        <noscript>
+          <p class="dxl-noscript">
+            This diagnostic needs JavaScript to run in your browser. You can
+            still <a href={CONTACT_CTA.href}>talk to Lumko directly</a>.
+          </p>
+        </noscript>
+      </div>
+    </div>
+  </section>
+
+  <AssessmentShell />
+
+  <div data-dx-landing>
+    <section class="section dxl-body" aria-labelledby="dxl-problem-h">
+      <div class="container container--wide dxl-body__grid">
+        <div class="dxl-body__main">
+          <h2 id="dxl-problem-h">The problem it looks for</h2>
+          {meta.problem.map((p) => <p class="dxl-body__p">{p}</p>)}
+
+          <h2 class="dxl-body__h">What it checks</h2>
+          <ul class="dxl-list" role="list">
+            {meta.checks.map((c) => <li><Icon name="ph:check-circle-light" aria-hidden="true" /><span>{c}</span></li>)}
+          </ul>
+
+          <h2 class="dxl-body__h">Who it is useful for</h2>
+          <ul class="dxl-list" role="list">
+            {meta.usefulFor.map((c) => <li><Icon name="ph:arrow-right-light" aria-hidden="true" /><span>{c}</span></li>)}
+          </ul>
+        </div>
+
+        <aside class="dxl-aside" aria-label="About this diagnostic">
+          <div class="dxl-card">
+            <h2><Icon name="ph:lock-simple-light" aria-hidden="true" /> Your privacy</h2>
+            <p>
+              Your answers stay in this browser tab while you work through the
+              diagnostic. Nothing is sent to Lumko unless you choose to request
+              the full report. Answers are never put in web addresses or sent
+              to analytics. <a href="/privacy#diagnostics">Privacy notice</a>.
+            </p>
+          </div>
+          <div class="dxl-card">
+            <h2><Icon name="ph:question-light" aria-hidden="true" /> Why we ask</h2>
+            <p>{meta.why}</p>
+          </div>
+          {claims.length > 0 && (
+            <div class="dxl-card">
+              <h2><Icon name="ph:info-light" aria-hidden="true" /> Why this matters now</h2>
+              {claims.map((c) => (
+                <p>
+                  {c.claim}{' '}
+                  <span class="dxl-source">
+                    Source: <a href={c.sourceUrl} rel="noopener">{c.sourceOrg}, {c.sourceTitle}</a>
+                    {' '}(checked {new Date(c.checked).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' })}).
+                  </span>
+                </p>
+              ))}
+            </div>
+          )}
+          {config.disclaimer && <p class="dxl-disclaimer">{config.disclaimer}</p>}
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section--tight dxl-next" aria-labelledby="dxl-next-h">
+      <div class="container container--wide dxl-next__inner">
+        <h2 id="dxl-next-h">Other diagnostics</h2>
+        <a href="/diagnostics" class="link-arrow"><span>See all diagnostics</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
+        <a href={CONTACT_CTA.href} class="link-arrow"><span>Already know what you need? {CONTACT_CTA.label}.</span><Icon name="ph:arrow-right-light" aria-hidden="true" /></a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

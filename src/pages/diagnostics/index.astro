@@ -1,0 +1,175 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import CtaBlock from '@/components/CtaBlock.astro';
+import DiagnosticCards from '@/components/diagnostics/DiagnosticCards.astro';
+import ManualSpectrum from '@/components/diagnostics/ManualSpectrum.astro';
+import { DIAGNOSTICS } from '@/data/diagnostics';
+import { SITE } from '@/consts';
+
+const site = Astro.site ?? new URL(SITE.origin);
+
+const PRINCIPLES = [
+  {
+    icon: 'ph:tree-structure-light',
+    title: 'Specialised, not generic',
+    body: 'Each diagnostic looks at one part of the operating environment in depth, with questions an experienced consultant would ask an operations manager.',
+  },
+  {
+    icon: 'ph:file-text-light',
+    title: 'Findings, not a score',
+    body: 'Results name the specific issues your answers point to, quote the evidence back to you, explain why each matters and suggest a practical next step.',
+  },
+  {
+    icon: 'ph:question-light',
+    title: '“Not sure” is a useful answer',
+    body: 'If nobody can easily say where information lives or how long something takes, that is worth knowing. It is noted as a visibility gap, not held against you.',
+  },
+  {
+    icon: 'ph:lock-simple-light',
+    title: 'Your answers stay with you',
+    body: 'Answers are kept in your browser tab. They are only sent to Lumko if you request the full report, and never to analytics or in web addresses.',
+  },
+];
+
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    '@id': new URL('/diagnostics', site).href + '#webpage',
+    url: new URL('/diagnostics', site).href,
+    name: 'Business technology diagnostics',
+    inLanguage: 'en-ZA',
+    isPartOf: { '@id': `${site.origin}/#website` },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: DIAGNOSTICS.map((d, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: d.name,
+        url: new URL(d.href, site).href,
+      })),
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Business Technology Diagnostics for South African Organisations"
+  description="Four free diagnostics that uncover manual processes, data exposure, invoicing-system readiness and unmanaged AI use. Practical findings and a first priority, from Lumko."
+  canonicalPath="/diagnostics"
+  schema={schema}
+>
+  <div class="container container--wide hub__crumbs">
+    <Breadcrumbs items={[{ label: 'Diagnostics' }]} />
+  </div>
+  <PageHero
+    label="Diagnostics"
+    title="Start with the problem, not the product."
+    lead="Our diagnostics examine specific parts of your operating environment and help identify what deserves attention before you commit to a technology project. Choose the one closest to what is worrying you."
+    seed={11}
+  />
+
+  <section class="section hub__cards" aria-labelledby="hub-cards-h">
+    <div class="container container--wide">
+      <h2 id="hub-cards-h" class="visually-hidden">Choose a diagnostic</h2>
+      <DiagnosticCards />
+    </div>
+  </section>
+
+  <section class="section section--tight hub__how" aria-labelledby="hub-how-h">
+    <div class="container container--wide">
+      <h2 id="hub-how-h" class="hub__how-h">How the diagnostics work</h2>
+      <ul class="hub__principles" role="list">
+        {PRINCIPLES.map((p, i) => (
+          <li data-reveal style={`--reveal-i:${i}`}>
+            <Icon name={p.icon} aria-hidden="true" />
+            <h3>{p.title}</h3>
+            <p>{p.body}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="hub__flow">
+        You answer the questions and see a summary on screen straight away. If
+        you would like the full report, with evidence, next steps and the
+        relevant Lumko capability for each finding, we ask for a few
+        professional details first. The diagnostics are operational technology
+        assessments; they are not legal, tax or compliance advice.
+      </p>
+    </div>
+  </section>
+
+  <section class="section hub__spectrum" aria-labelledby="spectrum-heading">
+    <div class="container container--wide">
+      <ManualSpectrum />
+    </div>
+  </section>
+
+  <CtaBlock
+    heading="Already know what you need?"
+    body="If you have a specific problem in mind, we can start with a conversation instead. We will help you work out what it involves and who needs to be in the room."
+  />
+</BaseLayout>
+
+<script>
+  import { track } from '@/lib/analytics';
+  track('diagnostic_hub_view');
+</script>
+
+<style>
+  .hub__crumbs {
+    padding-top: 1.5rem;
+  }
+  .hub__cards {
+    padding-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  .hub__how {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  .hub__how-h {
+    font-size: var(--text-h2);
+    max-width: 18ch;
+  }
+  .hub__principles {
+    list-style: none;
+    display: grid;
+    gap: 1.75rem 2.5rem;
+    margin-top: 2.5rem;
+  }
+  .hub__principles li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+  .hub__principles li :global(svg) {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--brand-700);
+  }
+  .hub__principles h3 {
+    font-size: var(--text-h4);
+  }
+  .hub__principles p {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .hub__flow {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-strong);
+    max-width: 72ch;
+    color: var(--ink-muted);
+  }
+  @media (min-width: 760px) {
+    .hub__principles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .hub__principles {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

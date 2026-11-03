@@ -1,19 +1,27 @@
 ---
+import { Icon } from 'astro-icon/components';
 import Button from '@/components/Button.astro';
-import { CONTACT, PRIMARY_CTA } from '@/consts';
+import { CONTACT, CONTACT_CTA } from '@/consts';
 
 interface Props {
   heading?: string;
   body?: string;
   primaryLabel?: string;
   primaryHref?: string;
+  /** Optional quieter text link under the button (e.g. "Talk to Lumko"). */
+  secondaryLabel?: string;
+  secondaryHref?: string;
+  analytics?: string;
 }
 
 const {
   heading = 'Have a technology problem worth solving?',
   body = 'Let’s talk about what you’re trying to achieve. We’ll help you work out what the problem really involves and who needs to be in the room to solve it.',
-  primaryLabel = PRIMARY_CTA.label,
-  primaryHref = PRIMARY_CTA.href,
+  primaryLabel = CONTACT_CTA.label,
+  primaryHref = CONTACT_CTA.href,
+  secondaryLabel,
+  secondaryHref,
+  analytics = 'primary_cta_click',
 } = Astro.props;
 ---
 
@@ -22,9 +30,17 @@ const {
     <h2 id="cta-heading" class="statement" data-reveal>{heading}</h2>
     <div class="cta-block__side" data-reveal style="--reveal-i:1">
       <p>{body}</p>
-      <Button href={primaryHref} size="lg" iconEnd="ph:arrow-right-light" data-analytics="primary_cta_click">
+      <Button href={primaryHref} size="lg" iconEnd="ph:arrow-right-light" data-analytics={analytics}>
         {primaryLabel}
       </Button>
+      {secondaryLabel && secondaryHref && (
+        <p class="cta-block__secondary">
+          <a href={secondaryHref} class="link-arrow" data-analytics="contact_cta_click">
+            <span>{secondaryLabel}</span>
+            <Icon name="ph:arrow-right-light" aria-hidden="true" />
+          </a>
+        </p>
+      )}
       <dl class="cta-block__direct">
         <div>
           <dt>Email</dt>
@@ -59,6 +75,10 @@ const {
     line-height: 1.55;
     max-width: 40ch;
     margin-bottom: 1.75rem;
+  }
+  .cta-block__side .cta-block__secondary {
+    margin: 1.25rem 0 0;
+    font-size: var(--text-sm);
   }
   .cta-block__direct {
     display: flex;

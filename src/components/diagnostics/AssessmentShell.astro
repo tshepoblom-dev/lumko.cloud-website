@@ -1,0 +1,46 @@
+---
+/**
+ * <AssessmentShell> — the container a diagnostic runs in. The client
+ * controller (src/lib/diagnostics/client.ts) renders steps and results into
+ * [data-dx-stage]. Icons, buttons and the lead form are server-rendered into
+ * <template>s so they keep the site's components and scoped styles.
+ */
+import { Icon } from 'astro-icon/components';
+import Button from '@/components/Button.astro';
+import LeadForm from './LeadForm.astro';
+
+const ICONS = ['warning', 'warning-circle', 'info', 'lightbulb', 'check-circle', 'arrow-left'];
+---
+
+<section class="dx" id="assessment" data-dx hidden aria-label="Diagnostic">
+  <div class="container container--narrow">
+    <div class="dx__progress" data-dx-progress hidden>
+      <p class="dx__progress-text" data-dx-progress-text></p>
+      <div class="dx__track" aria-hidden="true"><span data-dx-progress-fill></span></div>
+    </div>
+    <div class="visually-hidden" aria-live="polite" aria-atomic="true" data-dx-live></div>
+    <div class="dx__stage" data-dx-stage></div>
+  </div>
+
+  <dialog class="dx-dialog" data-dx-confirm aria-labelledby="dx-confirm-h">
+    <form method="dialog">
+      <h2 id="dx-confirm-h">Start over?</h2>
+      <p>
+        Your answers in this browser tab will be cleared. Anything you have
+        already sent to Lumko is not affected.
+      </p>
+      <div class="dx-dialog__actions">
+        <button class="dx-dbtn" value="cancel" data-dx-cancel>Keep my answers</button>
+        <button class="dx-dbtn dx-dbtn--danger" value="confirm">Clear and start over</button>
+      </div>
+    </form>
+  </dialog>
+
+  {ICONS.map((name) => (
+    <template data-dx-icon={name}><Icon name={`ph:${name}-light`} /></template>
+  ))}
+  <template data-dx-btn="next"><Button type="submit" iconEnd="ph:arrow-right-light">Continue</Button></template>
+  <template data-dx-btn="back"><Button type="button" variant="secondary" iconStart="ph:arrow-left-light">Back</Button></template>
+  <template data-dx-btn="cta"><Button href="/contact" size="lg" iconEnd="ph:arrow-right-light">Talk to Lumko</Button></template>
+  <template data-dx-lead-template><LeadForm /></template>
+</section>

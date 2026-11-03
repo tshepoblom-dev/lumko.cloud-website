@@ -1,0 +1,11 @@
+---
+import DiagnosticPage from '@/components/diagnostics/DiagnosticPage.astro';
+---
+
+<DiagnosticPage id="ai" />
+
+<script>
+  import { mount } from '@/lib/diagnostics/client';
+  import { aiDiagnostic } from '@/data/diagnostics/ai';
+  mount(aiDiagnostic);
+</script>

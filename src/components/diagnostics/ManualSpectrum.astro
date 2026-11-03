@@ -1,0 +1,140 @@
+---
+/**
+ * <ManualSpectrum> — "Three kinds of manual organisation". Written for
+ * organisations that already own major systems: the point is the manual
+ * work between and around them, not a lack of technology.
+ */
+interface Props {
+  headingId?: string;
+}
+const { headingId = 'spectrum-heading' } = Astro.props;
+
+const KINDS = [
+  {
+    n: '01',
+    name: 'Paper-based',
+    body: 'Physical forms, signatures and files still drive the workflow.',
+    signals: ['Printed forms and registers', 'Wet signatures', 'Filing cabinets as the record'],
+  },
+  {
+    n: '02',
+    name: 'Pseudo-digital',
+    body: 'The paper disappeared, but PDFs, Excel, email, WhatsApp and manual routing reproduce the same process on screens.',
+    signals: ['Print, sign, scan', 'Spreadsheets as the system', 'Approvals by email thread'],
+  },
+  {
+    n: '03',
+    name: 'Fragmented-digital',
+    body: 'The organisation owns major systems, but employees still download, copy, email and recapture information because those systems do not connect.',
+    signals: ['Export, paste, re-key', 'Reports compiled by hand', 'Several versions of the truth'],
+  },
+];
+---
+
+<div class="spectrum">
+  <header class="spectrum__head" data-reveal>
+    <p class="index-label">Where manual work hides</p>
+    <h2 id={headingId} class="statement">Three kinds of manual organisation.</h2>
+    <p>
+      Most organisations are a mix of all three. The sophisticated ones are
+      usually the third: well equipped, but held together by people moving
+      information between systems.
+    </p>
+  </header>
+  <ol class="spectrum__list" role="list">
+    {KINDS.map((k, i) => (
+      <li data-reveal style={`--reveal-i:${i}`}>
+        <span class="spectrum__n" aria-hidden="true">{k.n}</span>
+        <h3>{k.name}</h3>
+        <p>{k.body}</p>
+        <ul role="list" aria-label={`Typical signs of a ${k.name.toLowerCase()} process`}>
+          {k.signals.map((s) => <li>{s}</li>)}
+        </ul>
+      </li>
+    ))}
+  </ol>
+  <p class="spectrum__close" data-reveal>
+    The opportunity is not always to replace what you have. Sometimes it is to
+    connect it, remove a manual bridge or digitise the one process your
+    existing systems never solved.
+  </p>
+</div>
+
+<style>
+  .spectrum__head {
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  }
+  .spectrum__head h2 {
+    margin-top: 1rem;
+    max-width: 16ch;
+  }
+  .spectrum__head p:last-child {
+    margin-top: 1.25rem;
+    max-width: 58ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--ink-muted);
+  }
+  .spectrum__list {
+    list-style: none;
+    display: grid;
+    border-top: 1px solid var(--line-strong);
+  }
+  .spectrum__list > li {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .spectrum__n {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    color: var(--accent-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .spectrum__list h3 {
+    font-size: var(--text-h3);
+  }
+  .spectrum__list p {
+    color: var(--ink-muted);
+    max-width: 44ch;
+  }
+  .spectrum__list ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .spectrum__list ul li {
+    padding: 0.25rem 0.6rem;
+    font-size: var(--text-xs);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+  }
+  .spectrum__close {
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+    max-width: 52ch;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--text-h4);
+    font-weight: 560;
+    line-height: 1.4;
+    color: var(--ink-strong);
+  }
+  @media (min-width: 900px) {
+    .spectrum__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0 2.5rem;
+      border-top: 0;
+    }
+    .spectrum__list > li {
+      border-top: 2px solid var(--brand-700);
+      border-bottom: 0;
+      align-content: start;
+    }
+  }
+</style>

@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /thank-you
 Disallow: /styleguide
+Disallow: /diagnostic.php
+Disallow: /contact.php
 
 Sitemap: https://lumko.cloud/sitemap-index.xml

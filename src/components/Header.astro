@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import Button from '@/components/Button.astro';
 import lockup from '@/assets/brand/lumko-lockup.png';
-import { PRIMARY_NAV, PRIMARY_CTA, SITE } from '@/consts';
+import { PRIMARY_NAV, DIAGNOSTICS_CTA, CONTACT_CTA, SITE } from '@/consts';
 
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const isActive = (href: string) =>
@@ -48,8 +48,8 @@ const isActive = (href: string) =>
     </nav>
 
     <div class="site-header__cta">
-      <Button href={PRIMARY_CTA.href} size="sm" data-analytics="primary_cta_click">
-        {PRIMARY_CTA.label}
+      <Button href={DIAGNOSTICS_CTA.href} size="sm" data-analytics="header_diagnostics_click">
+        {DIAGNOSTICS_CTA.label}
       </Button>
     </div>
 
@@ -86,9 +86,13 @@ const isActive = (href: string) =>
       </ul>
     </nav>
     <div class="mobile-menu__cta">
-      <Button href={PRIMARY_CTA.href} fullWidth data-analytics="primary_cta_click">
-        {PRIMARY_CTA.label}
+      <Button href={DIAGNOSTICS_CTA.href} fullWidth data-analytics="header_diagnostics_click">
+        {DIAGNOSTICS_CTA.label}
       </Button>
+      <a href={CONTACT_CTA.href} class="mobile-menu__contact link-arrow" data-analytics="contact_cta_click">
+        <span>Already know what you need? {CONTACT_CTA.label}</span>
+        <Icon name="ph:arrow-right-light" aria-hidden="true" />
+      </a>
     </div>
   </div>
 </header>
@@ -139,7 +143,7 @@ const isActive = (href: string) =>
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.65rem;
     font-size: var(--text-sm);
     font-weight: 500;
     color: var(--ink);
@@ -150,8 +154,8 @@ const isActive = (href: string) =>
   .site-nav__link::after {
     content: '';
     position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
+    left: 0.65rem;
+    right: 0.65rem;
     bottom: 0.2rem;
     height: 1px;
     background: var(--brand-700);
@@ -260,6 +264,9 @@ const isActive = (href: string) =>
   .mobile-menu__cta {
     margin-top: 1.75rem;
   }
+  .mobile-menu__contact {
+    margin-top: 1.25rem;
+  }
 
   /* Links rise in, one after another, when the menu opens. */
   @media (prefers-reduced-motion: no-preference) {
@@ -276,7 +283,7 @@ const isActive = (href: string) =>
     }
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1120px) {
     .site-nav,
     .site-header__cta {
       display: flex;
@@ -326,5 +333,5 @@ const isActive = (href: string) =>
   });
 
   // Close the menu when the viewport crosses the desktop breakpoint
-  window.matchMedia('(min-width: 1000px)').addEventListener('change', () => setMobile(false));
+  window.matchMedia('(min-width: 1120px)').addEventListener('change', () => setMobile(false));
 </script>
