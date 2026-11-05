@@ -2,8 +2,12 @@
 
 Options -Indexes
 DirectoryIndex index.html
+# Pages like diagnostics.html sit next to a diagnostics/ folder. Stop Apache
+# redirecting /diagnostics to /diagnostics/ so the rewrite below can serve the page.
+DirectorySlash Off
 
 ErrorDocument 404 /404.html
+ErrorDocument 403 /404.html
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -21,11 +25,15 @@ ErrorDocument 404 /404.html
   RewriteRule ^solutions(/.*)?$ /what-we-do [L,R=301]
   RewriteRule ^how-it-works$ /about [L,R=301]
 
-  # Clean URLs: /about -> about.html, /work/x -> work/x.html
+  # No trailing slashes: /diagnostics/ -> /diagnostics
+  RewriteCond %{REQUEST_URI} ^/(.+)/$
+  RewriteRule ^ /%1 [L,R=301]
+
+  # Clean URLs: /about -> about.html, /diagnostics -> diagnostics.html.
+  # No directory check, so X.html wins even when a folder X/ also exists.
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^(.+?)/?$ $1.html [L]
+  RewriteRule ^(.+)$ $1.html [L]
 
   # Strip .html from requested URLs (only for direct requests, not rewrites).
   RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?]
